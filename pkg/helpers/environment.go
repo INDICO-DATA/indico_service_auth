@@ -40,7 +40,9 @@ func ParseEnvironment() (*InnovationCredentials, string) {
 		authServer = os.Getenv("AUTH_SERVER")
 	}
 
-	authServer = fmt.Sprintf("%s:443", authServer)
+	if os.Getenv("ENVIRONMENT") != "local" {
+		authServer = fmt.Sprintf("%s:443", authServer)
+	}
 
 	return innovationCredentials, authServer
 }
