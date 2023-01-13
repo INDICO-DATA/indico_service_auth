@@ -6,14 +6,21 @@ import (
 	"fmt"
 
 	authClient "github.com/INDICO-INNOVATION/indico_service_auth/client/auth"
+	clientsClient "github.com/INDICO-INNOVATION/indico_service_auth/client/clients"
 	mfaClient "github.com/INDICO-INNOVATION/indico_service_auth/client/mfa"
+	resourcesClient "github.com/INDICO-INNOVATION/indico_service_auth/client/resources"
+	serviceAccountClient "github.com/INDICO-INNOVATION/indico_service_auth/client/service_account"
+
 	"github.com/INDICO-INNOVATION/indico_service_auth/pkg/helpers"
 	"github.com/INDICO-INNOVATION/indico_service_auth/pkg/iam"
 )
 
 type Client struct {
-	authService authClient.AuthServiceClient
-	mfaService  mfaClient.MFAServiceClient
+	authService           authClient.AuthServiceClient
+	mfaService            mfaClient.MFAServiceClient
+	serviceAccountService serviceAccountClient.ServiceAccountServiceClient
+	resourcesService      resourcesClient.ResourceServiceClient
+	clientsService        clientsClient.ClientServiceClient
 }
 
 func generateToken(context context.Context, authservice authClient.AuthServiceClient, scope string) (*authClient.GenerateTokenResponse, error) {
@@ -58,8 +65,11 @@ func NewClient() (*Client, context.Context, error) {
 	conn := iam.Connect()
 
 	client := &Client{
-		authService: authClient.NewAuthServiceClient(conn),
-		mfaService:  mfaClient.NewMFAServiceClient(conn),
+		authService:           authClient.NewAuthServiceClient(conn),
+		mfaService:            mfaClient.NewMFAServiceClient(conn),
+		serviceAccountService: serviceAccountClient.NewServiceAccountServiceClient(conn),
+		resourcesService:      resourcesClient.NewResourceServiceClient(conn),
+		clientsService:        clientsClient.NewClientServiceClient(conn),
 	}
 
 	err := authorize(ctx, client, "auth.connect")

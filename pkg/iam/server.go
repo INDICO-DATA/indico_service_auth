@@ -4,6 +4,7 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"log"
+	"os"
 
 	"github.com/INDICO-INNOVATION/indico_service_auth/pkg/helpers"
 	"google.golang.org/grpc"
@@ -16,8 +17,7 @@ func Connect() *grpc.ClientConn {
 	var opts []grpc.DialOption
 	opts = append(opts, grpc.WithAuthority(authServer))
 
-	insecure := false
-	if insecure {
+	if os.Getenv("INSECURE") == "true" {
 		opts = append(opts, grpc.WithInsecure())
 	} else {
 		systemRoots, err := x509.SystemCertPool()
