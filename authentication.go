@@ -45,6 +45,14 @@ func authenticate(context context.Context, authservice authClient.AuthServiceCli
 }
 
 func authorize(context context.Context, client *Client, scope string) error {
+	response, err := client.clientsService.IsOwner(context, &clientsClient.IsOwnerRequest{Principal: iam.Credentials.ClientEmail})
+	if err != nil {
+		return fmt.Errorf("%s", "error to verify if user is owner")
+	}
+	if response.IsOwner {
+		return nil
+	}
+
 	token, err := generateToken(context, client.authService, scope)
 	if err != nil {
 		return fmt.Errorf("error to generate jwt token: %w", err)

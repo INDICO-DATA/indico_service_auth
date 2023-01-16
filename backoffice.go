@@ -52,8 +52,8 @@ func (client *Client) CreateResourceScope(ctx context.Context, label string, nam
 	return client.resourcesService.CreateResourceScope(ctx, createResourceScopeRequest)
 }
 
-func (client *Client) ListResources(ctx context.Context) (*resourcesClient.ListResource, error) {
-	if err := authorize(ctx, client, "iam_backoffice.admin"); err != nil {
+func (client *Client) ListResources(ctx context.Context, principal string) (*resourcesClient.ListResource, error) {
+	if err := authorize(ctx, client, "iam_server.use"); err != nil {
 		return nil, fmt.Errorf("%w", err)
 	}
 

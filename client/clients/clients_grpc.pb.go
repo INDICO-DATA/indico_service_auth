@@ -23,6 +23,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ClientServiceClient interface {
 	CreateClient(ctx context.Context, in *CreateClientRequest, opts ...grpc.CallOption) (*CreateClientResponse, error)
+	IsOwner(ctx context.Context, in *IsOwnerRequest, opts ...grpc.CallOption) (*IsOwnerResponse, error)
 }
 
 type clientServiceClient struct {
@@ -42,11 +43,21 @@ func (c *clientServiceClient) CreateClient(ctx context.Context, in *CreateClient
 	return out, nil
 }
 
+func (c *clientServiceClient) IsOwner(ctx context.Context, in *IsOwnerRequest, opts ...grpc.CallOption) (*IsOwnerResponse, error) {
+	out := new(IsOwnerResponse)
+	err := c.cc.Invoke(ctx, "/ClientService/IsOwner", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ClientServiceServer is the server API for ClientService service.
 // All implementations must embed UnimplementedClientServiceServer
 // for forward compatibility
 type ClientServiceServer interface {
 	CreateClient(context.Context, *CreateClientRequest) (*CreateClientResponse, error)
+	IsOwner(context.Context, *IsOwnerRequest) (*IsOwnerResponse, error)
 	mustEmbedUnimplementedClientServiceServer()
 }
 
@@ -56,6 +67,9 @@ type UnimplementedClientServiceServer struct {
 
 func (UnimplementedClientServiceServer) CreateClient(context.Context, *CreateClientRequest) (*CreateClientResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateClient not implemented")
+}
+func (UnimplementedClientServiceServer) IsOwner(context.Context, *IsOwnerRequest) (*IsOwnerResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method IsOwner not implemented")
 }
 func (UnimplementedClientServiceServer) mustEmbedUnimplementedClientServiceServer() {}
 
@@ -88,6 +102,24 @@ func _ClientService_CreateClient_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ClientService_IsOwner_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(IsOwnerRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ClientServiceServer).IsOwner(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/ClientService/IsOwner",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ClientServiceServer).IsOwner(ctx, req.(*IsOwnerRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ClientService_ServiceDesc is the grpc.ServiceDesc for ClientService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -98,6 +130,10 @@ var ClientService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateClient",
 			Handler:    _ClientService_CreateClient_Handler,
+		},
+		{
+			MethodName: "IsOwner",
+			Handler:    _ClientService_IsOwner_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
