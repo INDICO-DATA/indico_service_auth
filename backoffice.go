@@ -84,3 +84,16 @@ func (client *Client) CreateClient(ctx context.Context, principal string, client
 
 	return client.clientsService.CreateClient(ctx, createClientRequest)
 }
+
+func (client *Client) CreateRole(ctx context.Context, clientId int32, resourceScopeId int32) (*clientsClient.ClientRole, error) {
+	if err := authorize(ctx, client, "iam_backoffice.admin"); err != nil {
+		return nil, fmt.Errorf("%w", err)
+	}
+
+	clientRole := &clientsClient.ClientRole{
+		ClientId:        clientId,
+		ResourceScopeId: resourceScopeId,
+	}
+
+	return client.clientsService.CreateRole(ctx, clientRole)
+}
