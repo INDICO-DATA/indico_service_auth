@@ -20,35 +20,35 @@ func main() {
 	// validateThird(client, ctx, "643863")
 }
 
-func generateAndValidate(client *indicoserviceauth.Client, ctx context.Context) {
-	response, err := client.GenerateOTP(ctx)
-	if err != nil {
-		log.Fatalf(err.Error())
-	}
+// func generateAndValidate(client *indicoserviceauth.Client, ctx context.Context) {
+// 	response, err := client.GenerateOTP(ctx)
+// 	if err != nil {
+// 		log.Fatalf(err.Error())
+// 	}
 
-	fmt.Println("Generate OTP Response:")
-	fmt.Printf("%+v\n\n", response)
+// 	fmt.Println("Generate OTP Response:")
+// 	fmt.Printf("%+v\n\n", response)
 
-	responsev, err := client.ValidateOTP(ctx, response.Token, true)
-	if err != nil {
-		log.Fatalf(err.Error())
-	}
+// 	responsev, err := client.ValidateOTP(ctx, response.Token, true)
+// 	if err != nil {
+// 		log.Fatalf(err.Error())
+// 	}
 
-	fmt.Println("Validate OTP Response:")
-	fmt.Printf("%+v\n\n", responsev)
-}
+// 	fmt.Println("Validate OTP Response:")
+// 	fmt.Printf("%+v\n\n", responsev)
+// }
 
-func validateThird(client *indicoserviceauth.Client, ctx context.Context, token string) {
-	responsev, err := client.ValidateOTP(ctx, token, false)
-	if err != nil {
-		log.Fatalf(err.Error())
-	}
+// func validateThird(client *indicoserviceauth.Client, ctx context.Context, token string) {
+// 	responsev, err := client.ValidateOTP(ctx, token, false)
+// 	if err != nil {
+// 		log.Fatalf(err.Error())
+// 	}
 
-	fmt.Println("Validate Third Party OTP Response:")
-	fmt.Printf("%+v\n\n", responsev)
+// 	fmt.Println("Validate Third Party OTP Response:")
+// 	fmt.Printf("%+v\n\n", responsev)
 
-	ctx.Done()
-}
+// 	ctx.Done()
+// }
 
 func testBackoffice(client *indicoserviceauth.Client, ctx context.Context) {
 	response, err := client.ListResources(ctx)
