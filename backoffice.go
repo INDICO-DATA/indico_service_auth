@@ -72,7 +72,7 @@ func (client *Client) GetResourceScope(ctx context.Context, resourceID int32) (*
 	return client.resourcesService.GetResourceScope(ctx, getResourceScopeRequest)
 }
 
-func (client *Client) CreateClient(ctx context.Context, principal string, clientType string) (*clientsClient.CreateClientResponse, error) {
+func (client *Client) CreateClient(ctx context.Context, principal string, clientType string) (*clientsClient.Client, error) {
 	if err := authorize(ctx, client, "iam_backoffice.admin"); err != nil {
 		return nil, fmt.Errorf("%w", err)
 	}
@@ -85,15 +85,59 @@ func (client *Client) CreateClient(ctx context.Context, principal string, client
 	return client.clientsService.CreateClient(ctx, createClientRequest)
 }
 
-func (client *Client) CreateRole(ctx context.Context, clientId int32, resourceScopeId int32) (*clientsClient.ClientRole, error) {
+func (client *Client) CreateRole(ctx context.Context, clientID int32, resourceScopeID int32) (*clientsClient.Role, error) {
 	if err := authorize(ctx, client, "iam_backoffice.admin"); err != nil {
 		return nil, fmt.Errorf("%w", err)
 	}
 
-	clientRole := &clientsClient.ClientRole{
-		ClientId:        clientId,
-		ResourceScopeId: resourceScopeId,
+	clientRole := &clientsClient.CreateRoleRequest{
+		ClientId:        clientID,
+		ResourceScopeId: resourceScopeID,
 	}
 
 	return client.clientsService.CreateRole(ctx, clientRole)
+}
+
+func (client *Client) DeleteClient(ctx context.Context, clientID int32) (*clientsClient.DeleteClientReponse, error) {
+	if err := authorize(ctx, client, "iam_backoffice.admin"); err != nil {
+		return nil, fmt.Errorf("%w", err)
+	}
+
+	deleteClientRequest := &clientsClient.DeleteClientRequest{
+		ClientId: clientID,
+	}
+
+	return client.clientsService.DeleteClient(ctx, deleteClientRequest)
+}
+
+func (client *Client) DeleteRole(ctx context.Context, roleID int32) (*clientsClient.DeleteRoleReponse, error) {
+	if err := authorize(ctx, client, "iam_backoffice.admin"); err != nil {
+		return nil, fmt.Errorf("%w", err)
+	}
+
+	deleteRoleRequest := &clientsClient.DeleteRoleRequest{
+		RoleId: roleID,
+	}
+
+	return client.clientsService.DeleteRole(ctx, deleteRoleRequest)
+}
+
+func (client *Client) ListClients(ctx context.Context) (*clientsClient.ListClientResponse, error) {
+	if err := authorize(ctx, client, "iam_backoffice.admin"); err != nil {
+		return nil, fmt.Errorf("%w", err)
+	}
+
+	return client.clientsService.ListClients(ctx, &emptypb.Empty{})
+}
+
+func (client *Client) ListClientScopes(ctx context.Context, clientID int32) (*resourcesClient.ListResourceScope, error) {
+	if err := authorize(ctx, client, "iam_backoffice.admin"); err != nil {
+		return nil, fmt.Errorf("%w", err)
+	}
+
+	listClientScopesRequest := &resourcesClient.ListClientScopesRequest{
+		ClientId: clientID,
+	}
+
+	return client.resourcesService.ListClientScopes(ctx, listClientScopesRequest)
 }

@@ -7,6 +7,7 @@
 package clients
 
 import (
+	empty "github.com/golang/protobuf/ptypes/empty"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
@@ -20,6 +21,140 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+type Client struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Id        int32  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Principal string `protobuf:"bytes,2,opt,name=principal,proto3" json:"principal,omitempty"`
+	Type      string `protobuf:"bytes,3,opt,name=type,proto3" json:"type,omitempty"`
+	IsActive  bool   `protobuf:"varint,4,opt,name=is_active,json=isActive,proto3" json:"is_active"`
+}
+
+func (x *Client) Reset() {
+	*x = Client{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_protos_clients_proto_msgTypes[0]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *Client) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Client) ProtoMessage() {}
+
+func (x *Client) ProtoReflect() protoreflect.Message {
+	mi := &file_protos_clients_proto_msgTypes[0]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Client.ProtoReflect.Descriptor instead.
+func (*Client) Descriptor() ([]byte, []int) {
+	return file_protos_clients_proto_rawDescGZIP(), []int{0}
+}
+
+func (x *Client) GetId() int32 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+func (x *Client) GetPrincipal() string {
+	if x != nil {
+		return x.Principal
+	}
+	return ""
+}
+
+func (x *Client) GetType() string {
+	if x != nil {
+		return x.Type
+	}
+	return ""
+}
+
+func (x *Client) GetIsActive() bool {
+	if x != nil {
+		return x.IsActive
+	}
+	return false
+}
+
+type Role struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Id              int32 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	ClientId        int32 `protobuf:"varint,2,opt,name=client_id,json=clientId,proto3" json:"client_id,omitempty"`
+	ResourceScopeId int32 `protobuf:"varint,3,opt,name=resource_scope_id,json=resourceScopeId,proto3" json:"resource_scope_id,omitempty"`
+}
+
+func (x *Role) Reset() {
+	*x = Role{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_protos_clients_proto_msgTypes[1]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *Role) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Role) ProtoMessage() {}
+
+func (x *Role) ProtoReflect() protoreflect.Message {
+	mi := &file_protos_clients_proto_msgTypes[1]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Role.ProtoReflect.Descriptor instead.
+func (*Role) Descriptor() ([]byte, []int) {
+	return file_protos_clients_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *Role) GetId() int32 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+func (x *Role) GetClientId() int32 {
+	if x != nil {
+		return x.ClientId
+	}
+	return 0
+}
+
+func (x *Role) GetResourceScopeId() int32 {
+	if x != nil {
+		return x.ResourceScopeId
+	}
+	return 0
+}
+
 type CreateClientRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -32,7 +167,7 @@ type CreateClientRequest struct {
 func (x *CreateClientRequest) Reset() {
 	*x = CreateClientRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_protos_clients_proto_msgTypes[0]
+		mi := &file_protos_clients_proto_msgTypes[2]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -45,7 +180,7 @@ func (x *CreateClientRequest) String() string {
 func (*CreateClientRequest) ProtoMessage() {}
 
 func (x *CreateClientRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_clients_proto_msgTypes[0]
+	mi := &file_protos_clients_proto_msgTypes[2]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -58,7 +193,7 @@ func (x *CreateClientRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateClientRequest.ProtoReflect.Descriptor instead.
 func (*CreateClientRequest) Descriptor() ([]byte, []int) {
-	return file_protos_clients_proto_rawDescGZIP(), []int{0}
+	return file_protos_clients_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *CreateClientRequest) GetPrincipal() string {
@@ -75,34 +210,32 @@ func (x *CreateClientRequest) GetType() string {
 	return ""
 }
 
-type CreateClientResponse struct {
+type CreateRoleRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Id        int32  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	Principal string `protobuf:"bytes,2,opt,name=principal,proto3" json:"principal,omitempty"`
-	Type      string `protobuf:"bytes,3,opt,name=type,proto3" json:"type,omitempty"`
-	IsActive  bool   `protobuf:"varint,4,opt,name=is_active,json=isActive,proto3" json:"is_active"`
+	ClientId        int32 `protobuf:"varint,1,opt,name=client_id,json=clientId,proto3" json:"client_id,omitempty"`
+	ResourceScopeId int32 `protobuf:"varint,2,opt,name=resource_scope_id,json=resourceScopeId,proto3" json:"resource_scope_id,omitempty"`
 }
 
-func (x *CreateClientResponse) Reset() {
-	*x = CreateClientResponse{}
+func (x *CreateRoleRequest) Reset() {
+	*x = CreateRoleRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_protos_clients_proto_msgTypes[1]
+		mi := &file_protos_clients_proto_msgTypes[3]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
 }
 
-func (x *CreateClientResponse) String() string {
+func (x *CreateRoleRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*CreateClientResponse) ProtoMessage() {}
+func (*CreateRoleRequest) ProtoMessage() {}
 
-func (x *CreateClientResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_clients_proto_msgTypes[1]
+func (x *CreateRoleRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_protos_clients_proto_msgTypes[3]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -113,37 +246,23 @@ func (x *CreateClientResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use CreateClientResponse.ProtoReflect.Descriptor instead.
-func (*CreateClientResponse) Descriptor() ([]byte, []int) {
-	return file_protos_clients_proto_rawDescGZIP(), []int{1}
+// Deprecated: Use CreateRoleRequest.ProtoReflect.Descriptor instead.
+func (*CreateRoleRequest) Descriptor() ([]byte, []int) {
+	return file_protos_clients_proto_rawDescGZIP(), []int{3}
 }
 
-func (x *CreateClientResponse) GetId() int32 {
+func (x *CreateRoleRequest) GetClientId() int32 {
 	if x != nil {
-		return x.Id
+		return x.ClientId
 	}
 	return 0
 }
 
-func (x *CreateClientResponse) GetPrincipal() string {
+func (x *CreateRoleRequest) GetResourceScopeId() int32 {
 	if x != nil {
-		return x.Principal
+		return x.ResourceScopeId
 	}
-	return ""
-}
-
-func (x *CreateClientResponse) GetType() string {
-	if x != nil {
-		return x.Type
-	}
-	return ""
-}
-
-func (x *CreateClientResponse) GetIsActive() bool {
-	if x != nil {
-		return x.IsActive
-	}
-	return false
+	return 0
 }
 
 type IsOwnerRequest struct {
@@ -157,7 +276,7 @@ type IsOwnerRequest struct {
 func (x *IsOwnerRequest) Reset() {
 	*x = IsOwnerRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_protos_clients_proto_msgTypes[2]
+		mi := &file_protos_clients_proto_msgTypes[4]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -170,7 +289,7 @@ func (x *IsOwnerRequest) String() string {
 func (*IsOwnerRequest) ProtoMessage() {}
 
 func (x *IsOwnerRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_clients_proto_msgTypes[2]
+	mi := &file_protos_clients_proto_msgTypes[4]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -183,7 +302,7 @@ func (x *IsOwnerRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use IsOwnerRequest.ProtoReflect.Descriptor instead.
 func (*IsOwnerRequest) Descriptor() ([]byte, []int) {
-	return file_protos_clients_proto_rawDescGZIP(), []int{2}
+	return file_protos_clients_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *IsOwnerRequest) GetPrincipal() string {
@@ -204,7 +323,7 @@ type IsOwnerResponse struct {
 func (x *IsOwnerResponse) Reset() {
 	*x = IsOwnerResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_protos_clients_proto_msgTypes[3]
+		mi := &file_protos_clients_proto_msgTypes[5]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -217,7 +336,7 @@ func (x *IsOwnerResponse) String() string {
 func (*IsOwnerResponse) ProtoMessage() {}
 
 func (x *IsOwnerResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_clients_proto_msgTypes[3]
+	mi := &file_protos_clients_proto_msgTypes[5]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -230,7 +349,7 @@ func (x *IsOwnerResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use IsOwnerResponse.ProtoReflect.Descriptor instead.
 func (*IsOwnerResponse) Descriptor() ([]byte, []int) {
-	return file_protos_clients_proto_rawDescGZIP(), []int{3}
+	return file_protos_clients_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *IsOwnerResponse) GetIsOwner() bool {
@@ -240,32 +359,31 @@ func (x *IsOwnerResponse) GetIsOwner() bool {
 	return false
 }
 
-type ClientRole struct {
+type ListClientResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	ClientId        int32 `protobuf:"varint,1,opt,name=client_id,json=clientId,proto3" json:"client_id,omitempty"`
-	ResourceScopeId int32 `protobuf:"varint,2,opt,name=resource_scope_id,json=resourceScopeId,proto3" json:"resource_scope_id,omitempty"`
+	Data []*Client `protobuf:"bytes,1,rep,name=data,proto3" json:"data,omitempty"`
 }
 
-func (x *ClientRole) Reset() {
-	*x = ClientRole{}
+func (x *ListClientResponse) Reset() {
+	*x = ListClientResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_protos_clients_proto_msgTypes[4]
+		mi := &file_protos_clients_proto_msgTypes[6]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
 }
 
-func (x *ClientRole) String() string {
+func (x *ListClientResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*ClientRole) ProtoMessage() {}
+func (*ListClientResponse) ProtoMessage() {}
 
-func (x *ClientRole) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_clients_proto_msgTypes[4]
+func (x *ListClientResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_protos_clients_proto_msgTypes[6]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -276,50 +394,90 @@ func (x *ClientRole) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ClientRole.ProtoReflect.Descriptor instead.
-func (*ClientRole) Descriptor() ([]byte, []int) {
-	return file_protos_clients_proto_rawDescGZIP(), []int{4}
+// Deprecated: Use ListClientResponse.ProtoReflect.Descriptor instead.
+func (*ListClientResponse) Descriptor() ([]byte, []int) {
+	return file_protos_clients_proto_rawDescGZIP(), []int{6}
 }
 
-func (x *ClientRole) GetClientId() int32 {
+func (x *ListClientResponse) GetData() []*Client {
+	if x != nil {
+		return x.Data
+	}
+	return nil
+}
+
+type DeleteClientRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	ClientId int32 `protobuf:"varint,1,opt,name=client_id,json=clientId,proto3" json:"client_id,omitempty"`
+}
+
+func (x *DeleteClientRequest) Reset() {
+	*x = DeleteClientRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_protos_clients_proto_msgTypes[7]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *DeleteClientRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteClientRequest) ProtoMessage() {}
+
+func (x *DeleteClientRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_protos_clients_proto_msgTypes[7]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteClientRequest.ProtoReflect.Descriptor instead.
+func (*DeleteClientRequest) Descriptor() ([]byte, []int) {
+	return file_protos_clients_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *DeleteClientRequest) GetClientId() int32 {
 	if x != nil {
 		return x.ClientId
 	}
 	return 0
 }
 
-func (x *ClientRole) GetResourceScopeId() int32 {
-	if x != nil {
-		return x.ResourceScopeId
-	}
-	return 0
-}
-
-type GetClientRolesRequest struct {
+type DeleteClientReponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Principal string `protobuf:"bytes,1,opt,name=principal,proto3" json:"principal,omitempty"`
+	IsSuccess bool `protobuf:"varint,1,opt,name=is_success,json=isSuccess,proto3" json:"is_success"`
 }
 
-func (x *GetClientRolesRequest) Reset() {
-	*x = GetClientRolesRequest{}
+func (x *DeleteClientReponse) Reset() {
+	*x = DeleteClientReponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_protos_clients_proto_msgTypes[5]
+		mi := &file_protos_clients_proto_msgTypes[8]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
 }
 
-func (x *GetClientRolesRequest) String() string {
+func (x *DeleteClientReponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*GetClientRolesRequest) ProtoMessage() {}
+func (*DeleteClientReponse) ProtoMessage() {}
 
-func (x *GetClientRolesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_clients_proto_msgTypes[5]
+func (x *DeleteClientReponse) ProtoReflect() protoreflect.Message {
+	mi := &file_protos_clients_proto_msgTypes[8]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -330,64 +488,188 @@ func (x *GetClientRolesRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use GetClientRolesRequest.ProtoReflect.Descriptor instead.
-func (*GetClientRolesRequest) Descriptor() ([]byte, []int) {
-	return file_protos_clients_proto_rawDescGZIP(), []int{5}
+// Deprecated: Use DeleteClientReponse.ProtoReflect.Descriptor instead.
+func (*DeleteClientReponse) Descriptor() ([]byte, []int) {
+	return file_protos_clients_proto_rawDescGZIP(), []int{8}
 }
 
-func (x *GetClientRolesRequest) GetPrincipal() string {
+func (x *DeleteClientReponse) GetIsSuccess() bool {
 	if x != nil {
-		return x.Principal
+		return x.IsSuccess
 	}
-	return ""
+	return false
+}
+
+type DeleteRoleRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	RoleId int32 `protobuf:"varint,1,opt,name=role_id,json=roleId,proto3" json:"role_id,omitempty"`
+}
+
+func (x *DeleteRoleRequest) Reset() {
+	*x = DeleteRoleRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_protos_clients_proto_msgTypes[9]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *DeleteRoleRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteRoleRequest) ProtoMessage() {}
+
+func (x *DeleteRoleRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_protos_clients_proto_msgTypes[9]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteRoleRequest.ProtoReflect.Descriptor instead.
+func (*DeleteRoleRequest) Descriptor() ([]byte, []int) {
+	return file_protos_clients_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *DeleteRoleRequest) GetRoleId() int32 {
+	if x != nil {
+		return x.RoleId
+	}
+	return 0
+}
+
+type DeleteRoleReponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	IsSuccess bool `protobuf:"varint,1,opt,name=is_success,json=isSuccess,proto3" json:"is_success"`
+}
+
+func (x *DeleteRoleReponse) Reset() {
+	*x = DeleteRoleReponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_protos_clients_proto_msgTypes[10]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *DeleteRoleReponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteRoleReponse) ProtoMessage() {}
+
+func (x *DeleteRoleReponse) ProtoReflect() protoreflect.Message {
+	mi := &file_protos_clients_proto_msgTypes[10]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteRoleReponse.ProtoReflect.Descriptor instead.
+func (*DeleteRoleReponse) Descriptor() ([]byte, []int) {
+	return file_protos_clients_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *DeleteRoleReponse) GetIsSuccess() bool {
+	if x != nil {
+		return x.IsSuccess
+	}
+	return false
 }
 
 var File_protos_clients_proto protoreflect.FileDescriptor
 
 var file_protos_clients_proto_rawDesc = []byte{
 	0x0a, 0x14, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x73, 0x2f, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x73,
-	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0x47, 0x0a, 0x13, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65,
-	0x43, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x1c, 0x0a,
-	0x09, 0x70, 0x72, 0x69, 0x6e, 0x63, 0x69, 0x70, 0x61, 0x6c, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09,
+	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1b, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2f, 0x70,
+	0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2f, 0x65, 0x6d, 0x70, 0x74, 0x79, 0x2e, 0x70, 0x72,
+	0x6f, 0x74, 0x6f, 0x22, 0x67, 0x0a, 0x06, 0x43, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x12, 0x0e, 0x0a,
+	0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x05, 0x52, 0x02, 0x69, 0x64, 0x12, 0x1c, 0x0a,
+	0x09, 0x70, 0x72, 0x69, 0x6e, 0x63, 0x69, 0x70, 0x61, 0x6c, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09,
 	0x52, 0x09, 0x70, 0x72, 0x69, 0x6e, 0x63, 0x69, 0x70, 0x61, 0x6c, 0x12, 0x12, 0x0a, 0x04, 0x74,
-	0x79, 0x70, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x74, 0x79, 0x70, 0x65, 0x22,
-	0x75, 0x0a, 0x14, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x43, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x52,
-	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20,
-	0x01, 0x28, 0x05, 0x52, 0x02, 0x69, 0x64, 0x12, 0x1c, 0x0a, 0x09, 0x70, 0x72, 0x69, 0x6e, 0x63,
-	0x69, 0x70, 0x61, 0x6c, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x70, 0x72, 0x69, 0x6e,
-	0x63, 0x69, 0x70, 0x61, 0x6c, 0x12, 0x12, 0x0a, 0x04, 0x74, 0x79, 0x70, 0x65, 0x18, 0x03, 0x20,
-	0x01, 0x28, 0x09, 0x52, 0x04, 0x74, 0x79, 0x70, 0x65, 0x12, 0x1b, 0x0a, 0x09, 0x69, 0x73, 0x5f,
-	0x61, 0x63, 0x74, 0x69, 0x76, 0x65, 0x18, 0x04, 0x20, 0x01, 0x28, 0x08, 0x52, 0x08, 0x69, 0x73,
-	0x41, 0x63, 0x74, 0x69, 0x76, 0x65, 0x22, 0x2e, 0x0a, 0x0e, 0x49, 0x73, 0x4f, 0x77, 0x6e, 0x65,
-	0x72, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x1c, 0x0a, 0x09, 0x70, 0x72, 0x69, 0x6e,
-	0x63, 0x69, 0x70, 0x61, 0x6c, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x70, 0x72, 0x69,
-	0x6e, 0x63, 0x69, 0x70, 0x61, 0x6c, 0x22, 0x2c, 0x0a, 0x0f, 0x49, 0x73, 0x4f, 0x77, 0x6e, 0x65,
-	0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x19, 0x0a, 0x08, 0x69, 0x73, 0x5f,
-	0x6f, 0x77, 0x6e, 0x65, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x08, 0x52, 0x07, 0x69, 0x73, 0x4f,
-	0x77, 0x6e, 0x65, 0x72, 0x22, 0x55, 0x0a, 0x0a, 0x43, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x52, 0x6f,
-	0x6c, 0x65, 0x12, 0x1b, 0x0a, 0x09, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x5f, 0x69, 0x64, 0x18,
-	0x01, 0x20, 0x01, 0x28, 0x05, 0x52, 0x08, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x49, 0x64, 0x12,
-	0x2a, 0x0a, 0x11, 0x72, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x5f, 0x73, 0x63, 0x6f, 0x70,
-	0x65, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x05, 0x52, 0x0f, 0x72, 0x65, 0x73, 0x6f,
-	0x75, 0x72, 0x63, 0x65, 0x53, 0x63, 0x6f, 0x70, 0x65, 0x49, 0x64, 0x22, 0x35, 0x0a, 0x15, 0x47,
-	0x65, 0x74, 0x43, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x52, 0x6f, 0x6c, 0x65, 0x73, 0x52, 0x65, 0x71,
+	0x79, 0x70, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x74, 0x79, 0x70, 0x65, 0x12,
+	0x1b, 0x0a, 0x09, 0x69, 0x73, 0x5f, 0x61, 0x63, 0x74, 0x69, 0x76, 0x65, 0x18, 0x04, 0x20, 0x01,
+	0x28, 0x08, 0x52, 0x08, 0x69, 0x73, 0x41, 0x63, 0x74, 0x69, 0x76, 0x65, 0x22, 0x5f, 0x0a, 0x04,
+	0x52, 0x6f, 0x6c, 0x65, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x05,
+	0x52, 0x02, 0x69, 0x64, 0x12, 0x1b, 0x0a, 0x09, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x5f, 0x69,
+	0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x05, 0x52, 0x08, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x49,
+	0x64, 0x12, 0x2a, 0x0a, 0x11, 0x72, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x5f, 0x73, 0x63,
+	0x6f, 0x70, 0x65, 0x5f, 0x69, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x05, 0x52, 0x0f, 0x72, 0x65,
+	0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x53, 0x63, 0x6f, 0x70, 0x65, 0x49, 0x64, 0x22, 0x47, 0x0a,
+	0x13, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x43, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x71,
 	0x75, 0x65, 0x73, 0x74, 0x12, 0x1c, 0x0a, 0x09, 0x70, 0x72, 0x69, 0x6e, 0x63, 0x69, 0x70, 0x61,
 	0x6c, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x70, 0x72, 0x69, 0x6e, 0x63, 0x69, 0x70,
-	0x61, 0x6c, 0x32, 0xa8, 0x01, 0x0a, 0x0d, 0x43, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x53, 0x65, 0x72,
-	0x76, 0x69, 0x63, 0x65, 0x12, 0x3d, 0x0a, 0x0c, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x43, 0x6c,
-	0x69, 0x65, 0x6e, 0x74, 0x12, 0x14, 0x2e, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x43, 0x6c, 0x69,
-	0x65, 0x6e, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x15, 0x2e, 0x43, 0x72, 0x65,
-	0x61, 0x74, 0x65, 0x43, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
-	0x65, 0x22, 0x00, 0x12, 0x2e, 0x0a, 0x07, 0x49, 0x73, 0x4f, 0x77, 0x6e, 0x65, 0x72, 0x12, 0x0f,
-	0x2e, 0x49, 0x73, 0x4f, 0x77, 0x6e, 0x65, 0x72, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a,
-	0x10, 0x2e, 0x49, 0x73, 0x4f, 0x77, 0x6e, 0x65, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
-	0x65, 0x22, 0x00, 0x12, 0x28, 0x0a, 0x0a, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x52, 0x6f, 0x6c,
-	0x65, 0x12, 0x0b, 0x2e, 0x43, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x52, 0x6f, 0x6c, 0x65, 0x1a, 0x0b,
-	0x2e, 0x43, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x52, 0x6f, 0x6c, 0x65, 0x22, 0x00, 0x42, 0x2b, 0x5a,
-	0x29, 0x61, 0x75, 0x74, 0x68, 0x2e, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x73, 0x2e, 0x69,
-	0x6e, 0x64, 0x69, 0x63, 0x6f, 0x69, 0x6e, 0x6e, 0x6f, 0x76, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x2e,
-	0x70, 0x74, 0x2f, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x73, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74,
-	0x6f, 0x33,
+	0x61, 0x6c, 0x12, 0x12, 0x0a, 0x04, 0x74, 0x79, 0x70, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x04, 0x74, 0x79, 0x70, 0x65, 0x22, 0x5c, 0x0a, 0x11, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65,
+	0x52, 0x6f, 0x6c, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x1b, 0x0a, 0x09, 0x63,
+	0x6c, 0x69, 0x65, 0x6e, 0x74, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x05, 0x52, 0x08,
+	0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x49, 0x64, 0x12, 0x2a, 0x0a, 0x11, 0x72, 0x65, 0x73, 0x6f,
+	0x75, 0x72, 0x63, 0x65, 0x5f, 0x73, 0x63, 0x6f, 0x70, 0x65, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20,
+	0x01, 0x28, 0x05, 0x52, 0x0f, 0x72, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x53, 0x63, 0x6f,
+	0x70, 0x65, 0x49, 0x64, 0x22, 0x2e, 0x0a, 0x0e, 0x49, 0x73, 0x4f, 0x77, 0x6e, 0x65, 0x72, 0x52,
+	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x1c, 0x0a, 0x09, 0x70, 0x72, 0x69, 0x6e, 0x63, 0x69,
+	0x70, 0x61, 0x6c, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x70, 0x72, 0x69, 0x6e, 0x63,
+	0x69, 0x70, 0x61, 0x6c, 0x22, 0x2c, 0x0a, 0x0f, 0x49, 0x73, 0x4f, 0x77, 0x6e, 0x65, 0x72, 0x52,
+	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x19, 0x0a, 0x08, 0x69, 0x73, 0x5f, 0x6f, 0x77,
+	0x6e, 0x65, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x08, 0x52, 0x07, 0x69, 0x73, 0x4f, 0x77, 0x6e,
+	0x65, 0x72, 0x22, 0x31, 0x0a, 0x12, 0x4c, 0x69, 0x73, 0x74, 0x43, 0x6c, 0x69, 0x65, 0x6e, 0x74,
+	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x1b, 0x0a, 0x04, 0x64, 0x61, 0x74, 0x61,
+	0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x07, 0x2e, 0x43, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x52,
+	0x04, 0x64, 0x61, 0x74, 0x61, 0x22, 0x32, 0x0a, 0x13, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x43,
+	0x6c, 0x69, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x1b, 0x0a, 0x09,
+	0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x05, 0x52,
+	0x08, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x49, 0x64, 0x22, 0x34, 0x0a, 0x13, 0x44, 0x65, 0x6c,
+	0x65, 0x74, 0x65, 0x43, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x70, 0x6f, 0x6e, 0x73, 0x65,
+	0x12, 0x1d, 0x0a, 0x0a, 0x69, 0x73, 0x5f, 0x73, 0x75, 0x63, 0x63, 0x65, 0x73, 0x73, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x08, 0x52, 0x09, 0x69, 0x73, 0x53, 0x75, 0x63, 0x63, 0x65, 0x73, 0x73, 0x22,
+	0x2c, 0x0a, 0x11, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x52, 0x6f, 0x6c, 0x65, 0x52, 0x65, 0x71,
+	0x75, 0x65, 0x73, 0x74, 0x12, 0x17, 0x0a, 0x07, 0x72, 0x6f, 0x6c, 0x65, 0x5f, 0x69, 0x64, 0x18,
+	0x01, 0x20, 0x01, 0x28, 0x05, 0x52, 0x06, 0x72, 0x6f, 0x6c, 0x65, 0x49, 0x64, 0x22, 0x32, 0x0a,
+	0x11, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x52, 0x6f, 0x6c, 0x65, 0x52, 0x65, 0x70, 0x6f, 0x6e,
+	0x73, 0x65, 0x12, 0x1d, 0x0a, 0x0a, 0x69, 0x73, 0x5f, 0x73, 0x75, 0x63, 0x63, 0x65, 0x73, 0x73,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x08, 0x52, 0x09, 0x69, 0x73, 0x53, 0x75, 0x63, 0x63, 0x65, 0x73,
+	0x73, 0x32, 0xcf, 0x02, 0x0a, 0x0d, 0x43, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x53, 0x65, 0x72, 0x76,
+	0x69, 0x63, 0x65, 0x12, 0x2f, 0x0a, 0x0c, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x43, 0x6c, 0x69,
+	0x65, 0x6e, 0x74, 0x12, 0x14, 0x2e, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x43, 0x6c, 0x69, 0x65,
+	0x6e, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x07, 0x2e, 0x43, 0x6c, 0x69, 0x65,
+	0x6e, 0x74, 0x22, 0x00, 0x12, 0x29, 0x0a, 0x0a, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x52, 0x6f,
+	0x6c, 0x65, 0x12, 0x12, 0x2e, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x52, 0x6f, 0x6c, 0x65, 0x52,
+	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x05, 0x2e, 0x52, 0x6f, 0x6c, 0x65, 0x22, 0x00, 0x12,
+	0x2e, 0x0a, 0x07, 0x49, 0x73, 0x4f, 0x77, 0x6e, 0x65, 0x72, 0x12, 0x0f, 0x2e, 0x49, 0x73, 0x4f,
+	0x77, 0x6e, 0x65, 0x72, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x10, 0x2e, 0x49, 0x73,
+	0x4f, 0x77, 0x6e, 0x65, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x12,
+	0x3c, 0x0a, 0x0b, 0x4c, 0x69, 0x73, 0x74, 0x43, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x73, 0x12, 0x16,
+	0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66,
+	0x2e, 0x45, 0x6d, 0x70, 0x74, 0x79, 0x1a, 0x13, 0x2e, 0x4c, 0x69, 0x73, 0x74, 0x43, 0x6c, 0x69,
+	0x65, 0x6e, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x12, 0x3c, 0x0a,
+	0x0c, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x43, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x12, 0x14, 0x2e,
+	0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x43, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x71, 0x75,
+	0x65, 0x73, 0x74, 0x1a, 0x14, 0x2e, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x43, 0x6c, 0x69, 0x65,
+	0x6e, 0x74, 0x52, 0x65, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x12, 0x36, 0x0a, 0x0a, 0x44,
+	0x65, 0x6c, 0x65, 0x74, 0x65, 0x52, 0x6f, 0x6c, 0x65, 0x12, 0x12, 0x2e, 0x44, 0x65, 0x6c, 0x65,
+	0x74, 0x65, 0x52, 0x6f, 0x6c, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x12, 0x2e,
+	0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x52, 0x6f, 0x6c, 0x65, 0x52, 0x65, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x22, 0x00, 0x42, 0x2b, 0x5a, 0x29, 0x61, 0x75, 0x74, 0x68, 0x2e, 0x73, 0x65, 0x72, 0x76,
+	0x69, 0x63, 0x65, 0x73, 0x2e, 0x69, 0x6e, 0x64, 0x69, 0x63, 0x6f, 0x69, 0x6e, 0x6e, 0x6f, 0x76,
+	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x70, 0x74, 0x2f, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x73,
+	0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -402,27 +684,40 @@ func file_protos_clients_proto_rawDescGZIP() []byte {
 	return file_protos_clients_proto_rawDescData
 }
 
-var file_protos_clients_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
+var file_protos_clients_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
 var file_protos_clients_proto_goTypes = []interface{}{
-	(*CreateClientRequest)(nil),   // 0: CreateClientRequest
-	(*CreateClientResponse)(nil),  // 1: CreateClientResponse
-	(*IsOwnerRequest)(nil),        // 2: IsOwnerRequest
-	(*IsOwnerResponse)(nil),       // 3: IsOwnerResponse
-	(*ClientRole)(nil),            // 4: ClientRole
-	(*GetClientRolesRequest)(nil), // 5: GetClientRolesRequest
+	(*Client)(nil),              // 0: Client
+	(*Role)(nil),                // 1: Role
+	(*CreateClientRequest)(nil), // 2: CreateClientRequest
+	(*CreateRoleRequest)(nil),   // 3: CreateRoleRequest
+	(*IsOwnerRequest)(nil),      // 4: IsOwnerRequest
+	(*IsOwnerResponse)(nil),     // 5: IsOwnerResponse
+	(*ListClientResponse)(nil),  // 6: ListClientResponse
+	(*DeleteClientRequest)(nil), // 7: DeleteClientRequest
+	(*DeleteClientReponse)(nil), // 8: DeleteClientReponse
+	(*DeleteRoleRequest)(nil),   // 9: DeleteRoleRequest
+	(*DeleteRoleReponse)(nil),   // 10: DeleteRoleReponse
+	(*empty.Empty)(nil),         // 11: google.protobuf.Empty
 }
 var file_protos_clients_proto_depIdxs = []int32{
-	0, // 0: ClientService.CreateClient:input_type -> CreateClientRequest
-	2, // 1: ClientService.IsOwner:input_type -> IsOwnerRequest
-	4, // 2: ClientService.CreateRole:input_type -> ClientRole
-	1, // 3: ClientService.CreateClient:output_type -> CreateClientResponse
-	3, // 4: ClientService.IsOwner:output_type -> IsOwnerResponse
-	4, // 5: ClientService.CreateRole:output_type -> ClientRole
-	3, // [3:6] is the sub-list for method output_type
-	0, // [0:3] is the sub-list for method input_type
-	0, // [0:0] is the sub-list for extension type_name
-	0, // [0:0] is the sub-list for extension extendee
-	0, // [0:0] is the sub-list for field type_name
+	0,  // 0: ListClientResponse.data:type_name -> Client
+	2,  // 1: ClientService.CreateClient:input_type -> CreateClientRequest
+	3,  // 2: ClientService.CreateRole:input_type -> CreateRoleRequest
+	4,  // 3: ClientService.IsOwner:input_type -> IsOwnerRequest
+	11, // 4: ClientService.ListClients:input_type -> google.protobuf.Empty
+	7,  // 5: ClientService.DeleteClient:input_type -> DeleteClientRequest
+	9,  // 6: ClientService.DeleteRole:input_type -> DeleteRoleRequest
+	0,  // 7: ClientService.CreateClient:output_type -> Client
+	1,  // 8: ClientService.CreateRole:output_type -> Role
+	5,  // 9: ClientService.IsOwner:output_type -> IsOwnerResponse
+	6,  // 10: ClientService.ListClients:output_type -> ListClientResponse
+	8,  // 11: ClientService.DeleteClient:output_type -> DeleteClientReponse
+	10, // 12: ClientService.DeleteRole:output_type -> DeleteRoleReponse
+	7,  // [7:13] is the sub-list for method output_type
+	1,  // [1:7] is the sub-list for method input_type
+	1,  // [1:1] is the sub-list for extension type_name
+	1,  // [1:1] is the sub-list for extension extendee
+	0,  // [0:1] is the sub-list for field type_name
 }
 
 func init() { file_protos_clients_proto_init() }
@@ -432,7 +727,7 @@ func file_protos_clients_proto_init() {
 	}
 	if !protoimpl.UnsafeEnabled {
 		file_protos_clients_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*CreateClientRequest); i {
+			switch v := v.(*Client); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -444,7 +739,7 @@ func file_protos_clients_proto_init() {
 			}
 		}
 		file_protos_clients_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*CreateClientResponse); i {
+			switch v := v.(*Role); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -456,7 +751,7 @@ func file_protos_clients_proto_init() {
 			}
 		}
 		file_protos_clients_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*IsOwnerRequest); i {
+			switch v := v.(*CreateClientRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -468,7 +763,7 @@ func file_protos_clients_proto_init() {
 			}
 		}
 		file_protos_clients_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*IsOwnerResponse); i {
+			switch v := v.(*CreateRoleRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -480,7 +775,7 @@ func file_protos_clients_proto_init() {
 			}
 		}
 		file_protos_clients_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ClientRole); i {
+			switch v := v.(*IsOwnerRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -492,7 +787,67 @@ func file_protos_clients_proto_init() {
 			}
 		}
 		file_protos_clients_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*GetClientRolesRequest); i {
+			switch v := v.(*IsOwnerResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_protos_clients_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ListClientResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_protos_clients_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*DeleteClientRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_protos_clients_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*DeleteClientReponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_protos_clients_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*DeleteRoleRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_protos_clients_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*DeleteRoleReponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -510,7 +865,7 @@ func file_protos_clients_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_protos_clients_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   6,
+			NumMessages:   11,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
