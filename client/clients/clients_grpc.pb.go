@@ -8,6 +8,7 @@ package clients
 
 import (
 	context "context"
+	empty "github.com/golang/protobuf/ptypes/empty"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -22,9 +23,12 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ClientServiceClient interface {
-	CreateClient(ctx context.Context, in *CreateClientRequest, opts ...grpc.CallOption) (*CreateClientResponse, error)
+	CreateClient(ctx context.Context, in *CreateClientRequest, opts ...grpc.CallOption) (*Client, error)
+	CreateRole(ctx context.Context, in *CreateRoleRequest, opts ...grpc.CallOption) (*Role, error)
 	IsOwner(ctx context.Context, in *IsOwnerRequest, opts ...grpc.CallOption) (*IsOwnerResponse, error)
-	CreateRole(ctx context.Context, in *ClientRole, opts ...grpc.CallOption) (*ClientRole, error)
+	ListClients(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*ListClientResponse, error)
+	DeleteClient(ctx context.Context, in *DeleteClientRequest, opts ...grpc.CallOption) (*DeleteClientReponse, error)
+	DeleteRole(ctx context.Context, in *DeleteRoleRequest, opts ...grpc.CallOption) (*DeleteRoleReponse, error)
 }
 
 type clientServiceClient struct {
@@ -35,9 +39,18 @@ func NewClientServiceClient(cc grpc.ClientConnInterface) ClientServiceClient {
 	return &clientServiceClient{cc}
 }
 
-func (c *clientServiceClient) CreateClient(ctx context.Context, in *CreateClientRequest, opts ...grpc.CallOption) (*CreateClientResponse, error) {
-	out := new(CreateClientResponse)
+func (c *clientServiceClient) CreateClient(ctx context.Context, in *CreateClientRequest, opts ...grpc.CallOption) (*Client, error) {
+	out := new(Client)
 	err := c.cc.Invoke(ctx, "/ClientService/CreateClient", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *clientServiceClient) CreateRole(ctx context.Context, in *CreateRoleRequest, opts ...grpc.CallOption) (*Role, error) {
+	out := new(Role)
+	err := c.cc.Invoke(ctx, "/ClientService/CreateRole", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -53,9 +66,27 @@ func (c *clientServiceClient) IsOwner(ctx context.Context, in *IsOwnerRequest, o
 	return out, nil
 }
 
-func (c *clientServiceClient) CreateRole(ctx context.Context, in *ClientRole, opts ...grpc.CallOption) (*ClientRole, error) {
-	out := new(ClientRole)
-	err := c.cc.Invoke(ctx, "/ClientService/CreateRole", in, out, opts...)
+func (c *clientServiceClient) ListClients(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (*ListClientResponse, error) {
+	out := new(ListClientResponse)
+	err := c.cc.Invoke(ctx, "/ClientService/ListClients", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *clientServiceClient) DeleteClient(ctx context.Context, in *DeleteClientRequest, opts ...grpc.CallOption) (*DeleteClientReponse, error) {
+	out := new(DeleteClientReponse)
+	err := c.cc.Invoke(ctx, "/ClientService/DeleteClient", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *clientServiceClient) DeleteRole(ctx context.Context, in *DeleteRoleRequest, opts ...grpc.CallOption) (*DeleteRoleReponse, error) {
+	out := new(DeleteRoleReponse)
+	err := c.cc.Invoke(ctx, "/ClientService/DeleteRole", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -66,9 +97,12 @@ func (c *clientServiceClient) CreateRole(ctx context.Context, in *ClientRole, op
 // All implementations must embed UnimplementedClientServiceServer
 // for forward compatibility
 type ClientServiceServer interface {
-	CreateClient(context.Context, *CreateClientRequest) (*CreateClientResponse, error)
+	CreateClient(context.Context, *CreateClientRequest) (*Client, error)
+	CreateRole(context.Context, *CreateRoleRequest) (*Role, error)
 	IsOwner(context.Context, *IsOwnerRequest) (*IsOwnerResponse, error)
-	CreateRole(context.Context, *ClientRole) (*ClientRole, error)
+	ListClients(context.Context, *empty.Empty) (*ListClientResponse, error)
+	DeleteClient(context.Context, *DeleteClientRequest) (*DeleteClientReponse, error)
+	DeleteRole(context.Context, *DeleteRoleRequest) (*DeleteRoleReponse, error)
 	mustEmbedUnimplementedClientServiceServer()
 }
 
@@ -76,14 +110,23 @@ type ClientServiceServer interface {
 type UnimplementedClientServiceServer struct {
 }
 
-func (UnimplementedClientServiceServer) CreateClient(context.Context, *CreateClientRequest) (*CreateClientResponse, error) {
+func (UnimplementedClientServiceServer) CreateClient(context.Context, *CreateClientRequest) (*Client, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateClient not implemented")
+}
+func (UnimplementedClientServiceServer) CreateRole(context.Context, *CreateRoleRequest) (*Role, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateRole not implemented")
 }
 func (UnimplementedClientServiceServer) IsOwner(context.Context, *IsOwnerRequest) (*IsOwnerResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method IsOwner not implemented")
 }
-func (UnimplementedClientServiceServer) CreateRole(context.Context, *ClientRole) (*ClientRole, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateRole not implemented")
+func (UnimplementedClientServiceServer) ListClients(context.Context, *empty.Empty) (*ListClientResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListClients not implemented")
+}
+func (UnimplementedClientServiceServer) DeleteClient(context.Context, *DeleteClientRequest) (*DeleteClientReponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteClient not implemented")
+}
+func (UnimplementedClientServiceServer) DeleteRole(context.Context, *DeleteRoleRequest) (*DeleteRoleReponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteRole not implemented")
 }
 func (UnimplementedClientServiceServer) mustEmbedUnimplementedClientServiceServer() {}
 
@@ -116,6 +159,24 @@ func _ClientService_CreateClient_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ClientService_CreateRole_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateRoleRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ClientServiceServer).CreateRole(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/ClientService/CreateRole",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ClientServiceServer).CreateRole(ctx, req.(*CreateRoleRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _ClientService_IsOwner_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(IsOwnerRequest)
 	if err := dec(in); err != nil {
@@ -134,20 +195,56 @@ func _ClientService_IsOwner_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ClientService_CreateRole_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ClientRole)
+func _ClientService_ListClients_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(empty.Empty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ClientServiceServer).CreateRole(ctx, in)
+		return srv.(ClientServiceServer).ListClients(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/ClientService/CreateRole",
+		FullMethod: "/ClientService/ListClients",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ClientServiceServer).CreateRole(ctx, req.(*ClientRole))
+		return srv.(ClientServiceServer).ListClients(ctx, req.(*empty.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ClientService_DeleteClient_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteClientRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ClientServiceServer).DeleteClient(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/ClientService/DeleteClient",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ClientServiceServer).DeleteClient(ctx, req.(*DeleteClientRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ClientService_DeleteRole_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteRoleRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ClientServiceServer).DeleteRole(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/ClientService/DeleteRole",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ClientServiceServer).DeleteRole(ctx, req.(*DeleteRoleRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -164,12 +261,24 @@ var ClientService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _ClientService_CreateClient_Handler,
 		},
 		{
+			MethodName: "CreateRole",
+			Handler:    _ClientService_CreateRole_Handler,
+		},
+		{
 			MethodName: "IsOwner",
 			Handler:    _ClientService_IsOwner_Handler,
 		},
 		{
-			MethodName: "CreateRole",
-			Handler:    _ClientService_CreateRole_Handler,
+			MethodName: "ListClients",
+			Handler:    _ClientService_ListClients_Handler,
+		},
+		{
+			MethodName: "DeleteClient",
+			Handler:    _ClientService_DeleteClient_Handler,
+		},
+		{
+			MethodName: "DeleteRole",
+			Handler:    _ClientService_DeleteRole_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
