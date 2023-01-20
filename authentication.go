@@ -49,6 +49,7 @@ func authorize(context context.Context, client *Client, scope string) error {
 	if err != nil {
 		return fmt.Errorf("%s", "error to verify if user is owner")
 	}
+
 	if response.IsOwner {
 		return nil
 	}

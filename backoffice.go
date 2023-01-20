@@ -10,6 +10,33 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
+type ResourceScope struct {
+	ResourceScopesID int    `json:"resource_scopes_id"`
+	Name             string `json:"name"`
+	Label            string `json:"label"`
+	Description      string `json:"description,omitempty"`
+	ResourceID       int    `json:"resource_id"`
+}
+
+type ResourceScopeList struct {
+	Data []*ResourceScope `json:"data"`
+}
+
+func (rsl *ResourceScopeList) createResourceScopeRequestMapper() *resourcesClient.CreateResourceScopeRequest {
+	data := new(resourcesClient.CreateResourceScopeRequest)
+
+	for _, item := range rsl.Data {
+		data.Data = append(data.Data, &resourcesClient.ResourceScope{
+			Name:        item.Name,
+			Label:       item.Label,
+			Description: item.Description,
+			ResourceId:  int32(item.ResourceID),
+		})
+	}
+
+	return data
+}
+
 func (client *Client) CreateServiceAccount(ctx context.Context, displayName string, name string, description string) (*serviceAccountClient.CreateServiceAccountResponse, error) {
 	if err := authorize(ctx, client, "iam_backoffice.admin"); err != nil {
 		return nil, fmt.Errorf("%w", err)
@@ -37,19 +64,13 @@ func (client *Client) CreateResource(ctx context.Context, name string, descripti
 	return client.resourcesService.CreateResource(ctx, createResourceRequest)
 }
 
-func (client *Client) CreateResourceScope(ctx context.Context, label string, name string, description string, resourceID int32) (*resourcesClient.ResourceScope, error) {
+func (client *Client) CreateResourceScope(ctx context.Context, payload *ResourceScopeList) (*resourcesClient.CreateResourceScopeRequest, error) {
 	if err := authorize(ctx, client, "iam_backoffice.admin"); err != nil {
 		return nil, fmt.Errorf("%w", err)
 	}
 
-	createResourceScopeRequest := &resourcesClient.CreateResourceScopeRequest{
-		Label:       label,
-		Name:        name,
-		Description: description,
-		ResourceId:  resourceID,
-	}
+	return client.resourcesService.CreateResourceScope(ctx, payload.createResourceScopeRequestMapper())
 
-	return client.resourcesService.CreateResourceScope(ctx, createResourceScopeRequest)
 }
 
 func (client *Client) ListResources(ctx context.Context) (*resourcesClient.ListResource, error) {

@@ -51,49 +51,69 @@ func main() {
 // }
 
 func testBackoffice(client *indicoserviceauth.Client, ctx context.Context) {
-	response, err := client.ListResources(ctx)
+	// response, err := client.ListResources(ctx)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// }
+	// fmt.Println(response)
+
+	// fmt.Println("")
+
+	// response2, err := client.CreateClient(ctx, "Anthony", "user")
+	// if err != nil {
+	// 	fmt.Println(err)
+	// }
+	// fmt.Println(response2)
+
+	// fmt.Println("")
+
+	// response3, err := client.CreateResource(ctx, "use", "Use stuff")
+	// if err != nil {
+	// 	fmt.Println(err)
+	// }
+	// fmt.Println(response3)
+
+	// fmt.Println("")
+
+	testCreateResourceScope(client, ctx)
+
+	// response5, err := client.CreateServiceAccount(ctx, "Tony", "tony", "he likes food")
+	// if err != nil {
+	// 	fmt.Println(err)
+	// }
+	// fmt.Println(response5)
+
+	// fmt.Println("")
+
+	// response6, err := client.GetResourceScope(ctx, 5)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// }
+	// fmt.Println(response6)
+}
+
+func testCreateResourceScope(client *indicoserviceauth.Client, ctx context.Context) {
+	payload := &indicoserviceauth.ResourceScopeList{
+		Data: []*indicoserviceauth.ResourceScope{
+			{
+				Name:        "role_1",
+				Label:       "Role_1",
+				Description: "Access to role 1",
+				ResourceID:  1,
+			},
+			{
+				Name:        "role_2",
+				Label:       "Role_2",
+				Description: "Access to role 2",
+				ResourceID:  1,
+			},
+		},
+	}
+
+	response, err := client.CreateResourceScope(ctx, payload)
 	if err != nil {
 		fmt.Println(err)
 	}
 	fmt.Println(response)
-
 	fmt.Println("")
-
-	response2, err := client.CreateClient(ctx, "Anthony", "user")
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Println(response2)
-
-	fmt.Println("")
-
-	response3, err := client.CreateResource(ctx, "use", "Use stuff")
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Println(response3)
-
-	fmt.Println("")
-
-	response4, err := client.CreateResourceScope(ctx, "Developer", "dev", "He program", 5)
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Println(response4)
-
-	fmt.Println("")
-
-	response5, err := client.CreateServiceAccount(ctx, "Tony", "tony", "he likes food")
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Println(response5)
-
-	fmt.Println("")
-
-	response6, err := client.GetResourceScope(ctx, 5)
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Println(response6)
 }

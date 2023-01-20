@@ -18,4 +18,3 @@
 *.yaml
 
 cmd/
-Makefile
