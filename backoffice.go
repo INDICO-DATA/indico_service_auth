@@ -131,13 +131,14 @@ func (client *Client) DeleteClient(ctx context.Context, clientID int32) (*client
 	return client.clientsService.DeleteClient(ctx, deleteClientRequest)
 }
 
-func (client *Client) DeleteRole(ctx context.Context, roleID int32) (*clientsClient.DeleteRoleReponse, error) {
+func (client *Client) DeleteRole(ctx context.Context, clientId int32, resourceScopeId int32) (*clientsClient.DeleteRoleReponse, error) {
 	if err := authorize(ctx, client, "iam_backoffice.admin"); err != nil {
 		return nil, fmt.Errorf("%w", err)
 	}
 
 	deleteRoleRequest := &clientsClient.DeleteRoleRequest{
-		RoleId: roleID,
+		ClientId:        clientId,
+		ResourceScopeId: resourceScopeId,
 	}
 
 	return client.clientsService.DeleteRole(ctx, deleteRoleRequest)
