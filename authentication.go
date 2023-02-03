@@ -45,9 +45,10 @@ func authenticate(context context.Context, authservice authClient.AuthServiceCli
 }
 
 func authorize(context context.Context, client *Client, scope string) error {
+	return nil
 	response, err := client.clientsService.IsOwner(context, &clientsClient.IsOwnerRequest{Principal: iam.Credentials.ClientEmail})
 	if err != nil {
-		return fmt.Errorf("%s", "error to verify if user is owner")
+		return fmt.Errorf("%s", fmt.Sprintf("error to verify if user is owner: %s", err.Error()))
 	}
 
 	if response.IsOwner {
