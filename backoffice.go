@@ -6,7 +6,6 @@ import (
 	"io"
 	"log"
 
-	clientsClient "github.com/INDICO-INNOVATION/indico_service_auth/client/clients"
 	resourcesClient "github.com/INDICO-INNOVATION/indico_service_auth/client/resources"
 	serviceAccountClient "github.com/INDICO-INNOVATION/indico_service_auth/client/service_account"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -87,7 +86,7 @@ func (client *Client) GenerateCredentials(ctx context.Context, id string) (*serv
 		return nil, fmt.Errorf("%w", err)
 	}
 
-	return client.serviceAccountService.GenerateCredentials(ctx, &serviceAccountClient.CredentialsRequest{Id: id})
+	return client.serviceAccountService.GenerateCredentials(ctx, &serviceAccountClient.CredentialsRequest{ServiceAccountId: id})
 }
 
 func (client *Client) DeleteServiceAccount(ctx context.Context, ids []string) ([]*serviceAccountClient.ServiceAccount, error) {
@@ -120,7 +119,7 @@ func (client *Client) DeleteServiceAccount(ctx context.Context, ids []string) ([
 	}()
 
 	for _, accountID := range ids {
-		if err := stream.Send(&serviceAccountClient.CredentialsRequest{Id: accountID}); err != nil {
+		if err := stream.Send(&serviceAccountClient.CredentialsRequest{ServiceAccountId: accountID}); err != nil {
 			return nil, fmt.Errorf("the following error occured while streaming delete service accounts: %w", err)
 		}
 	}
@@ -199,73 +198,73 @@ func (client *Client) GetResourceScope(ctx context.Context, resourceID int32) (*
 }
 
 // Clients
-func (client *Client) CreateClient(ctx context.Context, principal string, clientType string) (*clientsClient.Client, error) {
-	if err := authorize(ctx, client, "iam_backoffice.admin"); err != nil {
-		return nil, fmt.Errorf("%w", err)
-	}
+// func (client *Client) CreateClient(ctx context.Context, principal string, clientType string) (*clientsClient.Client, error) {
+// 	if err := authorize(ctx, client, "iam_backoffice.admin"); err != nil {
+// 		return nil, fmt.Errorf("%w", err)
+// 	}
 
-	createClientRequest := &clientsClient.CreateClientRequest{
-		Principal: principal,
-		Type:      clientType,
-	}
+// 	createClientRequest := &clientsClient.CreateClientRequest{
+// 		Principal: principal,
+// 		Type:      clientType,
+// 	}
 
-	return client.clientsService.CreateClient(ctx, createClientRequest)
-}
+// 	return client.clientsService.CreateClient(ctx, createClientRequest)
+// }
 
-func (client *Client) CreateRole(ctx context.Context, clientID int32, resourceScopeID int32) (*clientsClient.Role, error) {
-	if err := authorize(ctx, client, "iam_backoffice.admin"); err != nil {
-		return nil, fmt.Errorf("%w", err)
-	}
+// func (client *Client) CreateRole(ctx context.Context, clientID int32, resourceScopeID int32) (*clientsClient.Role, error) {
+// 	if err := authorize(ctx, client, "iam_backoffice.admin"); err != nil {
+// 		return nil, fmt.Errorf("%w", err)
+// 	}
 
-	clientRole := &clientsClient.CreateRoleRequest{
-		ClientId:        clientID,
-		ResourceScopeId: resourceScopeID,
-	}
+// 	clientRole := &clientsClient.CreateRoleRequest{
+// 		ClientId:        clientID,
+// 		ResourceScopeId: resourceScopeID,
+// 	}
 
-	return client.clientsService.CreateRole(ctx, clientRole)
-}
+// 	return client.clientsService.CreateRole(ctx, clientRole)
+// }
 
-func (client *Client) DeleteClient(ctx context.Context, clientID int32) (*clientsClient.DeleteClientReponse, error) {
-	if err := authorize(ctx, client, "iam_backoffice.admin"); err != nil {
-		return nil, fmt.Errorf("%w", err)
-	}
+// func (client *Client) DeleteClient(ctx context.Context, clientID int32) (*clientsClient.DeleteClientReponse, error) {
+// 	if err := authorize(ctx, client, "iam_backoffice.admin"); err != nil {
+// 		return nil, fmt.Errorf("%w", err)
+// 	}
 
-	deleteClientRequest := &clientsClient.DeleteClientRequest{
-		ClientId: clientID,
-	}
+// 	deleteClientRequest := &clientsClient.DeleteClientRequest{
+// 		ClientId: clientID,
+// 	}
 
-	return client.clientsService.DeleteClient(ctx, deleteClientRequest)
-}
+// 	return client.clientsService.DeleteClient(ctx, deleteClientRequest)
+// }
 
-func (client *Client) DeleteRole(ctx context.Context, clientId int32, resourceScopeId int32) (*clientsClient.DeleteRoleReponse, error) {
-	if err := authorize(ctx, client, "iam_backoffice.admin"); err != nil {
-		return nil, fmt.Errorf("%w", err)
-	}
+// func (client *Client) DeleteRole(ctx context.Context, clientId int32, resourceScopeId int32) (*clientsClient.DeleteRoleReponse, error) {
+// 	if err := authorize(ctx, client, "iam_backoffice.admin"); err != nil {
+// 		return nil, fmt.Errorf("%w", err)
+// 	}
 
-	deleteRoleRequest := &clientsClient.DeleteRoleRequest{
-		ClientId:        clientId,
-		ResourceScopeId: resourceScopeId,
-	}
+// 	deleteRoleRequest := &clientsClient.DeleteRoleRequest{
+// 		ClientId:        clientId,
+// 		ResourceScopeId: resourceScopeId,
+// 	}
 
-	return client.clientsService.DeleteRole(ctx, deleteRoleRequest)
-}
+// 	return client.clientsService.DeleteRole(ctx, deleteRoleRequest)
+// }
 
-func (client *Client) ListClients(ctx context.Context) (*clientsClient.ListClientResponse, error) {
-	if err := authorize(ctx, client, "iam_backoffice.admin"); err != nil {
-		return nil, fmt.Errorf("%w", err)
-	}
+// func (client *Client) ListClients(ctx context.Context) (*clientsClient.ListClientResponse, error) {
+// 	if err := authorize(ctx, client, "iam_backoffice.admin"); err != nil {
+// 		return nil, fmt.Errorf("%w", err)
+// 	}
 
-	return client.clientsService.ListClients(ctx, &emptypb.Empty{})
-}
+// 	return client.clientsService.ListClients(ctx, &emptypb.Empty{})
+// }
 
-func (client *Client) ListClientScopes(ctx context.Context, clientID int32) (*resourcesClient.ListResourceScope, error) {
-	if err := authorize(ctx, client, "iam_backoffice.admin"); err != nil {
-		return nil, fmt.Errorf("%w", err)
-	}
+// func (client *Client) ListClientScopes(ctx context.Context, clientID int32) (*resourcesClient.ListResourceScope, error) {
+// 	if err := authorize(ctx, client, "iam_backoffice.admin"); err != nil {
+// 		return nil, fmt.Errorf("%w", err)
+// 	}
 
-	listClientScopesRequest := &resourcesClient.ListClientScopesRequest{
-		ClientId: clientID,
-	}
+// 	listClientScopesRequest := &resourcesClient.ListClientScopesRequest{
+// 		ClientId: clientID,
+// 	}
 
-	return client.resourcesService.ListClientScopes(ctx, listClientScopesRequest)
-}
+// 	return client.resourcesService.ListClientScopes(ctx, listClientScopesRequest)
+// }
