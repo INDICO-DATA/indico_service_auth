@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	authClient "github.com/INDICO-INNOVATION/indico_service_auth/client/auth"
+	clientsClient "github.com/INDICO-INNOVATION/indico_service_auth/client/clients"
 	mfaClient "github.com/INDICO-INNOVATION/indico_service_auth/client/mfa"
 	resourcesClient "github.com/INDICO-INNOVATION/indico_service_auth/client/resources"
 	serviceAccountClient "github.com/INDICO-INNOVATION/indico_service_auth/client/service_account"
@@ -19,7 +20,7 @@ type Client struct {
 	mfaService            mfaClient.MFAServiceClient
 	serviceAccountService serviceAccountClient.ServiceAccountServiceClient
 	resourcesService      resourcesClient.ResourceServiceClient
-	// clientsService        clientsClient.ClientServiceClient
+	clientsService        clientsClient.ClientServiceClient
 }
 
 func generateToken(context context.Context, authservice authClient.AuthServiceClient, scope string) (*authClient.GenerateTokenResponse, error) {
@@ -44,15 +45,14 @@ func authenticate(context context.Context, authservice authClient.AuthServiceCli
 }
 
 func authorize(context context.Context, client *Client, scope string) error {
-	return nil
-	// response, err := client.clientsService.IsOwner(context, &clientsClient.IsOwnerRequest{Principal: iam.Credentials.ClientEmail})
-	// if err != nil {
-	// 	return fmt.Errorf("%s", fmt.Sprintf("error to verify if user is owner: %s", err.Error()))
-	// }
+	response, err := client.clientsService.IsOwner(context, &clientsClient.IsOwnerRequest{Principal: iam.Credentials.ClientEmail})
+	if err != nil {
+		return fmt.Errorf("%s", fmt.Sprintf("error to verify if user is owner: %s", err.Error()))
+	}
 
-	// if response.IsOwner {
-	// 	return nil
-	// }
+	if response.IsOwner {
+		return nil
+	}
 
 	token, err := generateToken(context, client.authService, scope)
 	if err != nil {
@@ -78,7 +78,7 @@ func NewClient() (*Client, context.Context, error) {
 		mfaService:            mfaClient.NewMFAServiceClient(conn),
 		serviceAccountService: serviceAccountClient.NewServiceAccountServiceClient(conn),
 		resourcesService:      resourcesClient.NewResourceServiceClient(conn),
-		// clientsService:        clientsClient.NewClientServiceClient(conn),
+		clientsService:        clientsClient.NewClientServiceClient(conn),
 	}
 
 	err := authorize(ctx, client, "auth.connect")

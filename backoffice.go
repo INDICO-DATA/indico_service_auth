@@ -6,36 +6,23 @@ import (
 	"io"
 	"log"
 
+	"github.com/INDICO-INNOVATION/indico_service_auth/client/clients"
+	clientsClient "github.com/INDICO-INNOVATION/indico_service_auth/client/clients"
 	resourcesClient "github.com/INDICO-INNOVATION/indico_service_auth/client/resources"
 	serviceAccountClient "github.com/INDICO-INNOVATION/indico_service_auth/client/service_account"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 type ResourceScope struct {
-	ResourceScopesID int    `json:"resource_scopes_id"`
+	ResourceScopesID int64  `json:"resource_scopes_id"`
 	Name             string `json:"name"`
 	Label            string `json:"label"`
 	Description      string `json:"description,omitempty"`
-	ResourceID       int    `json:"resource_id"`
+	ResourceID       int64  `json:"resource_id"`
 }
 
 type ResourceScopeList struct {
 	Data []*ResourceScope `json:"data"`
-}
-
-func (rsl *ResourceScopeList) createResourceScopeRequestMapper() *resourcesClient.CreateResourceScopeRequest {
-	data := new(resourcesClient.CreateResourceScopeRequest)
-
-	for _, item := range rsl.Data {
-		data.Data = append(data.Data, &resourcesClient.ResourceScope{
-			Name:        item.Name,
-			Label:       item.Label,
-			Description: item.Description,
-			ResourceId:  int32(item.ResourceID),
-		})
-	}
-
-	return data
 }
 
 // Service Accounts
@@ -140,131 +127,413 @@ func (client *Client) CreateResource(ctx context.Context, name string, descripti
 		Description: description,
 	}
 
-	return client.resourcesService.CreateResource(ctx, createResourceRequest)
+	return client.resourcesService.Create(ctx, createResourceRequest)
 }
 
-func (client *Client) CreateResourceScope(ctx context.Context, payload *ResourceScopeList) (*resourcesClient.CreateResourceScopeRequest, error) {
-	if err := authorize(ctx, client, "iam_backoffice.admin"); err != nil {
-		return nil, fmt.Errorf("%w", err)
-	}
-
-	return client.resourcesService.CreateResourceScope(ctx, payload.createResourceScopeRequestMapper())
-}
-
-func (client *Client) ListResources(ctx context.Context) (*resourcesClient.ListResource, error) {
+func (client *Client) ListResources(ctx context.Context) ([]*resourcesClient.Resource, error) {
 	if err := authorize(ctx, client, "iam_server.use"); err != nil {
 		return nil, fmt.Errorf("%w", err)
 	}
 
-	return client.resourcesService.ListResources(ctx, &emptypb.Empty{})
+	resources := []*resourcesClient.Resource{}
+
+	stream, err := client.resourcesService.List(ctx, &emptypb.Empty{})
+	if err != nil {
+		return nil, fmt.Errorf("error to stream list service account due to: %w", err)
+	}
+
+	for {
+		resource, err := stream.Recv()
+		if err == io.EOF {
+			break
+		}
+
+		if err != nil {
+			return nil, fmt.Errorf("the following error occured while streaming list resources: %w", err)
+		}
+
+		resources = append(resources, resource)
+	}
+
+	return resources, nil
 }
 
-func (client *Client) DeleteResource(ctx context.Context, resourceID int32) (*resourcesClient.DeleteResourceReponse, error) {
+func (client *Client) DeleteResource(ctx context.Context, resourceIDs []string) ([]*resourcesClient.Resource, error) {
 	if err := authorize(ctx, client, "iam_backoffice.admin"); err != nil {
 		return nil, fmt.Errorf("%w", err)
 	}
 
-	deleteResourceRequest := &resourcesClient.DeleteResourceRequest{
-		ResourceId: resourceID,
+	stream, err := client.resourcesService.Delete(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("the following error occured while streaming delete resources: %w", err)
 	}
 
-	return client.resourcesService.DeleteResource(ctx, deleteResourceRequest)
+	deletedResources := []*resourcesClient.Resource{}
+
+	waitc := make(chan struct{})
+	go func() {
+		for {
+			in, err := stream.Recv()
+			if err == io.EOF {
+				close(waitc)
+				return
+			}
+
+			if err != nil {
+				log.Fatalf("the following error occured while streaming delete resources response: %s", err.Error())
+			}
+
+			deletedResources = append(deletedResources, in)
+		}
+	}()
+
+	for _, resourceID := range resourceIDs {
+		if err := stream.Send(&resourcesClient.QueryResourceRequest{ResourceId: resourceID}); err != nil {
+			return nil, fmt.Errorf("the following error occured while streaming delete resources: %w", err)
+		}
+	}
+	stream.CloseSend()
+	<-waitc
+
+	return deletedResources, nil
 }
 
-func (client *Client) UpdateResource(ctx context.Context, resource *resourcesClient.Resource, scopes *ResourceScopeList) (*resourcesClient.ResourceData, error) {
+func (client *Client) UpdateResource(ctx context.Context, resource *resourcesClient.Resource) (*resourcesClient.Resource, error) {
 	if err := authorize(ctx, client, "iam_backoffice.admin"); err != nil {
 		return nil, fmt.Errorf("%w", err)
 	}
 
-	resourceData := &resourcesClient.ResourceData{
-		Resource: resource,
-		Scopes:   scopes.createResourceScopeRequestMapper().GetData(),
-	}
-
-	return client.resourcesService.UpdateResource(ctx, resourceData)
+	return client.resourcesService.Update(ctx, resource)
 }
 
 // Resource Scopes
-func (client *Client) GetResourceScope(ctx context.Context, resourceID int32) (*resourcesClient.ListResourceScope, error) {
+func (client *Client) CreateResourceScope(ctx context.Context, scopes []*resourcesClient.ResourceScope) ([]*resourcesClient.ResourceScope, error) {
 	if err := authorize(ctx, client, "iam_backoffice.admin"); err != nil {
 		return nil, fmt.Errorf("%w", err)
 	}
 
-	getResourceScopeRequest := &resourcesClient.GetResourceScopeRequest{
+	stream, err := client.resourcesService.CreateScope(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("the following error occured while streaming delete resources: %w", err)
+	}
+
+	var resourceScopes []*resourcesClient.ResourceScope
+
+	waitc := make(chan struct{})
+	go func() {
+		for {
+			resourceScope, err := stream.Recv()
+			if err == io.EOF {
+				close(waitc)
+				return
+			}
+
+			if err != nil {
+				log.Fatalf("the following error occured while streaming create resource scopes response: %s", err.Error())
+			}
+
+			resourceScopes = append(resourceScopes, resourceScope)
+		}
+	}()
+
+	for _, scope := range scopes {
+		err := stream.Send(&resourcesClient.ResourceScope{
+			Name:        scope.Name,
+			Label:       scope.Label,
+			Description: scope.Description,
+			ResourceId:  int64(scope.ResourceId),
+		})
+
+		if err != nil {
+			return nil, fmt.Errorf("the following error occured while streaming create resource scopes: %w", err)
+		}
+	}
+
+	stream.CloseSend()
+	<-waitc
+
+	return resourceScopes, nil
+}
+
+func (client *Client) ListResourceScope(ctx context.Context, resourceID string) ([]*resourcesClient.ResourceScope, error) {
+	if err := authorize(ctx, client, "iam_backoffice.admin"); err != nil {
+		return nil, fmt.Errorf("%w", err)
+	}
+
+	getResourceScopeRequest := &resourcesClient.QueryResourceRequest{
 		ResourceId: resourceID,
 	}
 
-	return client.resourcesService.GetResourceScope(ctx, getResourceScopeRequest)
+	stream, err := client.resourcesService.ListScope(ctx, getResourceScopeRequest)
+	if err != nil {
+		return nil, fmt.Errorf("error to stream list resource scpopes due to: %w", err)
+	}
+
+	scopes := []*resourcesClient.ResourceScope{}
+
+	for {
+		scope, err := stream.Recv()
+		if err == io.EOF {
+			break
+		}
+
+		if err != nil {
+			return nil, fmt.Errorf("the following error occured while streaming list resources: %w", err)
+		}
+
+		scopes = append(scopes, scope)
+	}
+
+	return scopes, nil
+}
+
+func (client *Client) UpdateResourceScope(ctx context.Context, scopes []*resourcesClient.ResourceScope) ([]*resourcesClient.ResourceScope, error) {
+	if err := authorize(ctx, client, "iam_backoffice.admin"); err != nil {
+		return nil, fmt.Errorf("%w", err)
+	}
+
+	stream, err := client.resourcesService.UpdateScope(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("the following error occured while streaming update resource scopes: %w", err)
+	}
+
+	updatedResources := []*resourcesClient.ResourceScope{}
+
+	waitc := make(chan struct{})
+	go func() {
+		for {
+			in, err := stream.Recv()
+			if err == io.EOF {
+				close(waitc)
+				return
+			}
+
+			if err != nil {
+				log.Fatalf("the following error occured while streaming update resource scopes response: %s", err.Error())
+			}
+
+			updatedResources = append(updatedResources, in)
+		}
+	}()
+
+	for _, scope := range scopes {
+		if err := stream.Send(&resourcesClient.ResourceScope{
+			ResourceScopesId: scope.ResourceScopesId,
+			Label:            scope.Label,
+			Name:             scope.Name,
+			Description:      scope.Description,
+			ResourceId:       scope.ResourceId,
+		}); err != nil {
+			return nil, fmt.Errorf("the following error occured while streaming update resource scopes: %w", err)
+		}
+	}
+	stream.CloseSend()
+	<-waitc
+
+	return updatedResources, nil
 }
 
 // Clients
-// func (client *Client) CreateClient(ctx context.Context, principal string, clientType string) (*clientsClient.Client, error) {
-// 	if err := authorize(ctx, client, "iam_backoffice.admin"); err != nil {
-// 		return nil, fmt.Errorf("%w", err)
-// 	}
+func (client *Client) CreateClient(ctx context.Context, principal string, clientType string) (*clientsClient.Client, error) {
+	if err := authorize(ctx, client, "iam_backoffice.admin"); err != nil {
+		return nil, fmt.Errorf("%w", err)
+	}
 
-// 	createClientRequest := &clientsClient.CreateClientRequest{
-// 		Principal: principal,
-// 		Type:      clientType,
-// 	}
+	createClientRequest := &clientsClient.ClientRequest{
+		Principal: principal,
+		Type:      clientType,
+	}
 
-// 	return client.clientsService.CreateClient(ctx, createClientRequest)
-// }
+	return client.clientsService.Create(ctx, createClientRequest)
+}
 
-// func (client *Client) CreateRole(ctx context.Context, clientID int32, resourceScopeID int32) (*clientsClient.Role, error) {
-// 	if err := authorize(ctx, client, "iam_backoffice.admin"); err != nil {
-// 		return nil, fmt.Errorf("%w", err)
-// 	}
+func (client *Client) CreateRole(ctx context.Context, clientID int64, roles []*clientsClient.Role) ([]*clientsClient.Role, error) {
+	if err := authorize(ctx, client, "iam_backoffice.admin"); err != nil {
+		return nil, fmt.Errorf("%w", err)
+	}
 
-// 	clientRole := &clientsClient.CreateRoleRequest{
-// 		ClientId:        clientID,
-// 		ResourceScopeId: resourceScopeID,
-// 	}
+	stream, err := client.clientsService.CreateRole(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("the following error occured while streaming creating roles: %w", err)
+	}
 
-// 	return client.clientsService.CreateRole(ctx, clientRole)
-// }
+	createdRoles := []*clientsClient.Role{}
 
-// func (client *Client) DeleteClient(ctx context.Context, clientID int32) (*clientsClient.DeleteClientReponse, error) {
-// 	if err := authorize(ctx, client, "iam_backoffice.admin"); err != nil {
-// 		return nil, fmt.Errorf("%w", err)
-// 	}
+	waitc := make(chan struct{})
+	go func() {
+		for {
+			in, err := stream.Recv()
+			if err == io.EOF {
+				close(waitc)
+				return
+			}
 
-// 	deleteClientRequest := &clientsClient.DeleteClientRequest{
-// 		ClientId: clientID,
-// 	}
+			if err != nil {
+				log.Fatalf("the following error occured while streaming delete creating roles: %s", err.Error())
+			}
 
-// 	return client.clientsService.DeleteClient(ctx, deleteClientRequest)
-// }
+			createdRoles = append(roles, in)
+		}
+	}()
 
-// func (client *Client) DeleteRole(ctx context.Context, clientId int32, resourceScopeId int32) (*clientsClient.DeleteRoleReponse, error) {
-// 	if err := authorize(ctx, client, "iam_backoffice.admin"); err != nil {
-// 		return nil, fmt.Errorf("%w", err)
-// 	}
+	for _, role := range roles {
+		if err := stream.Send(&clientsClient.CreateRoleRequest{ClientId: clientID, ScopeId: role.ScopeId}); err != nil {
+			return nil, fmt.Errorf("the following error occured while streaming creating roles: %w", err)
+		}
+	}
+	stream.CloseSend()
+	<-waitc
 
-// 	deleteRoleRequest := &clientsClient.DeleteRoleRequest{
-// 		ClientId:        clientId,
-// 		ResourceScopeId: resourceScopeId,
-// 	}
+	return createdRoles, nil
+}
 
-// 	return client.clientsService.DeleteRole(ctx, deleteRoleRequest)
-// }
+func (client *Client) DeleteClient(ctx context.Context, clientIDs []int64) ([]*clientsClient.Client, error) {
+	if err := authorize(ctx, client, "iam_backoffice.admin"); err != nil {
+		return nil, fmt.Errorf("%w", err)
+	}
 
-// func (client *Client) ListClients(ctx context.Context) (*clientsClient.ListClientResponse, error) {
-// 	if err := authorize(ctx, client, "iam_backoffice.admin"); err != nil {
-// 		return nil, fmt.Errorf("%w", err)
-// 	}
+	stream, err := client.clientsService.Delete(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("the following error occured while streaming delete clients: %w", err)
+	}
 
-// 	return client.clientsService.ListClients(ctx, &emptypb.Empty{})
-// }
+	deletedClients := []*clientsClient.Client{}
 
-// func (client *Client) ListClientScopes(ctx context.Context, clientID int32) (*resourcesClient.ListResourceScope, error) {
-// 	if err := authorize(ctx, client, "iam_backoffice.admin"); err != nil {
-// 		return nil, fmt.Errorf("%w", err)
-// 	}
+	waitc := make(chan struct{})
+	go func() {
+		for {
+			in, err := stream.Recv()
+			if err == io.EOF {
+				close(waitc)
+				return
+			}
 
-// 	listClientScopesRequest := &resourcesClient.ListClientScopesRequest{
-// 		ClientId: clientID,
-// 	}
+			if err != nil {
+				log.Fatalf("the following error occured while streaming delete clients response: %s", err.Error())
+			}
 
-// 	return client.resourcesService.ListClientScopes(ctx, listClientScopesRequest)
-// }
+			deletedClients = append(deletedClients, in)
+		}
+	}()
+
+	for _, clientID := range clientIDs {
+		if err := stream.Send(&clientsClient.DeleteClientRequest{ClientId: clientID}); err != nil {
+			return nil, fmt.Errorf("the following error occured while streaming delete clients: %w", err)
+		}
+	}
+	stream.CloseSend()
+	<-waitc
+
+	return deletedClients, nil
+}
+
+func (client *Client) ListClients(ctx context.Context) ([]*clientsClient.Client, error) {
+	if err := authorize(ctx, client, "iam_server.use"); err != nil {
+		return nil, fmt.Errorf("%w", err)
+	}
+
+	clients := []*clientsClient.Client{}
+
+	stream, err := client.clientsService.List(ctx, &emptypb.Empty{})
+	if err != nil {
+		return nil, fmt.Errorf("error to stream list clients due to: %w", err)
+	}
+
+	for {
+		client, err := stream.Recv()
+		if err == io.EOF {
+			break
+		}
+
+		if err != nil {
+			return nil, fmt.Errorf("the following error occured while streaming list clients: %w", err)
+		}
+
+		clients = append(clients, client)
+	}
+
+	return clients, nil
+}
+
+func (client *Client) UpdateClient(ctx context.Context, id int64, principal string) (*clientsClient.Client, error) {
+	if err := authorize(ctx, client, "iam_backoffice.admin"); err != nil {
+		return nil, fmt.Errorf("%w", err)
+	}
+
+	createClientRequest := &clientsClient.Client{
+		Id:        id,
+		Principal: principal,
+	}
+
+	return client.clientsService.Update(ctx, createClientRequest)
+}
+
+func (client *Client) UpdateRoles(ctx context.Context, roles []*clientsClient.Role) ([]*clientsClient.Role, error) {
+	if err := authorize(ctx, client, "iam_backoffice.admin"); err != nil {
+		return nil, fmt.Errorf("%w", err)
+	}
+
+	stream, err := client.clientsService.UpdateRoles(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("the following error occured while streaming updating roles: %w", err)
+	}
+
+	updatedRoles := []*clientsClient.Role{}
+
+	waitc := make(chan struct{})
+	go func() {
+		for {
+			in, err := stream.Recv()
+			if err == io.EOF {
+				close(waitc)
+				return
+			}
+
+			if err != nil {
+				log.Fatalf("the following error occured while streaming updating roles: %s", err.Error())
+			}
+
+			updatedRoles = append(roles, in)
+		}
+	}()
+
+	for _, role := range roles {
+		if err := stream.Send(&clientsClient.Role{ClientId: role.ClientId, ScopeId: role.ScopeId, Id: role.Id}); err != nil {
+			return nil, fmt.Errorf("the following error occured while streaming updating roles: %w", err)
+		}
+	}
+	stream.CloseSend()
+	<-waitc
+
+	return updatedRoles, nil
+}
+
+func (client *Client) RetrieveClient(ctx context.Context, clientID int64) ([]*clientsClient.RetrieveResourceScope, error) {
+	if err := authorize(ctx, client, "iam_backoffice.admin"); err != nil {
+		return nil, fmt.Errorf("%w", err)
+	}
+
+	retrieveRequest := clientsClient.DeleteClientRequest{ClientId: clientID}
+
+	scopes := []*clients.RetrieveResourceScope{}
+
+	stream, err := client.clientsService.Retrieve(ctx, &retrieveRequest)
+	if err != nil {
+		return nil, fmt.Errorf("error to stream retrieve client due to: %w", err)
+	}
+
+	for {
+		scope, err := stream.Recv()
+		if err == io.EOF {
+			break
+		}
+
+		if err != nil {
+			return nil, fmt.Errorf("the following error occured while streaming retrieve client: %w", err)
+		}
+
+		scopes = append(scopes, scope)
+	}
+
+	return scopes, nil
+}
