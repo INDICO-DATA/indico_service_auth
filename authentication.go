@@ -27,6 +27,7 @@ func generateToken(context context.Context, authservice authClient.AuthServiceCl
 	request := &authClient.GenerateTokenRequest{
 		ClientId:     iam.Credentials.ClientID,
 		ClientSecret: iam.Credentials.ClientSecret,
+		Email:        iam.Credentials.ClientEmail,
 		Scope:        scope,
 		PrivateKey:   iam.Credentials.PrivateKey,
 		Type:         iam.Credentials.Type,

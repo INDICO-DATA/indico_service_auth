@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"os"
 	"strconv"
 
 	indicoserviceauth "github.com/INDICO-INNOVATION/indico_service_auth"
@@ -15,12 +16,9 @@ import (
 )
 
 func main() {
-	client, ctx, err := indicoserviceauth.NewClient()
-	if err != nil {
-		log.Fatalf(err.Error())
-	}
+	testAPIClients()
 
-	testBackoffice(client, ctx)
+	// testBackoffice()
 
 	// generateAndValidate(client, ctx)
 	// validateThird(client, ctx, "643863")
@@ -56,7 +54,42 @@ func main() {
 // 	ctx.Done()
 // }
 
-func testBackoffice(client *indicoserviceauth.Client, ctx context.Context) {
+func testAPIClients() {
+	log.Printf("Testing API Clients credentials to IAM...\n\n")
+	testIamBackofficeAPIClient()
+	testGaiaAPIClient()
+}
+
+func testIamBackofficeAPIClient() {
+	os.Setenv("INNOVATION_CREDENTIALS", "backoffice.json")
+
+	_, _, err := indicoserviceauth.NewClient()
+	if err != nil {
+		log.Fatalf(err.Error())
+	}
+
+	log.Println("Backoffice API Client successfully connected to IAM through Indico Service Auth")
+}
+
+func testGaiaAPIClient() {
+	os.Setenv("INNOVATION_CREDENTIALS", "gaia.json")
+
+	_, _, err := indicoserviceauth.NewClient()
+	if err != nil {
+		log.Fatalf(err.Error())
+	}
+
+	log.Println("G.AI.A API Client successfully connected to IAM through Indico Service Auth")
+}
+
+func testBackoffice() {
+	os.Setenv("INNOVATION_CREDENTIALS", "backoffice.json")
+
+	client, ctx, err := indicoserviceauth.NewClient()
+	if err != nil {
+		log.Fatalf(err.Error())
+	}
+
 	testServiceAccounts(client, ctx)
 	testClients(client, ctx)
 	testResources(client, ctx)
