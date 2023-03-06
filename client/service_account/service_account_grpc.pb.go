@@ -4,7 +4,7 @@
 // - protoc             v3.12.4
 // source: service_account.proto
 
-package serviceaccounts
+package service_account
 
 import (
 	context "context"
@@ -24,7 +24,6 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ServiceAccountServiceClient interface {
 	Create(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*ServiceAccount, error)
-	GenerateCredentials(ctx context.Context, in *CredentialsRequest, opts ...grpc.CallOption) (*ServiceAccountCredentials, error)
 	List(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (ServiceAccountService_ListClient, error)
 	Delete(ctx context.Context, opts ...grpc.CallOption) (ServiceAccountService_DeleteClient, error)
 }
@@ -40,15 +39,6 @@ func NewServiceAccountServiceClient(cc grpc.ClientConnInterface) ServiceAccountS
 func (c *serviceAccountServiceClient) Create(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*ServiceAccount, error) {
 	out := new(ServiceAccount)
 	err := c.cc.Invoke(ctx, "/ServiceAccountService/Create", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *serviceAccountServiceClient) GenerateCredentials(ctx context.Context, in *CredentialsRequest, opts ...grpc.CallOption) (*ServiceAccountCredentials, error) {
-	out := new(ServiceAccountCredentials)
-	err := c.cc.Invoke(ctx, "/ServiceAccountService/GenerateCredentials", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -97,7 +87,7 @@ func (c *serviceAccountServiceClient) Delete(ctx context.Context, opts ...grpc.C
 }
 
 type ServiceAccountService_DeleteClient interface {
-	Send(*CredentialsRequest) error
+	Send(*ServiceAccountRequest) error
 	Recv() (*ServiceAccount, error)
 	grpc.ClientStream
 }
@@ -106,7 +96,7 @@ type serviceAccountServiceDeleteClient struct {
 	grpc.ClientStream
 }
 
-func (x *serviceAccountServiceDeleteClient) Send(m *CredentialsRequest) error {
+func (x *serviceAccountServiceDeleteClient) Send(m *ServiceAccountRequest) error {
 	return x.ClientStream.SendMsg(m)
 }
 
@@ -123,7 +113,6 @@ func (x *serviceAccountServiceDeleteClient) Recv() (*ServiceAccount, error) {
 // for forward compatibility
 type ServiceAccountServiceServer interface {
 	Create(context.Context, *CreateRequest) (*ServiceAccount, error)
-	GenerateCredentials(context.Context, *CredentialsRequest) (*ServiceAccountCredentials, error)
 	List(*empty.Empty, ServiceAccountService_ListServer) error
 	Delete(ServiceAccountService_DeleteServer) error
 	mustEmbedUnimplementedServiceAccountServiceServer()
@@ -135,9 +124,6 @@ type UnimplementedServiceAccountServiceServer struct {
 
 func (UnimplementedServiceAccountServiceServer) Create(context.Context, *CreateRequest) (*ServiceAccount, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Create not implemented")
-}
-func (UnimplementedServiceAccountServiceServer) GenerateCredentials(context.Context, *CredentialsRequest) (*ServiceAccountCredentials, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GenerateCredentials not implemented")
 }
 func (UnimplementedServiceAccountServiceServer) List(*empty.Empty, ServiceAccountService_ListServer) error {
 	return status.Errorf(codes.Unimplemented, "method List not implemented")
@@ -176,24 +162,6 @@ func _ServiceAccountService_Create_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ServiceAccountService_GenerateCredentials_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CredentialsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ServiceAccountServiceServer).GenerateCredentials(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/ServiceAccountService/GenerateCredentials",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ServiceAccountServiceServer).GenerateCredentials(ctx, req.(*CredentialsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _ServiceAccountService_List_Handler(srv interface{}, stream grpc.ServerStream) error {
 	m := new(empty.Empty)
 	if err := stream.RecvMsg(m); err != nil {
@@ -221,7 +189,7 @@ func _ServiceAccountService_Delete_Handler(srv interface{}, stream grpc.ServerSt
 
 type ServiceAccountService_DeleteServer interface {
 	Send(*ServiceAccount) error
-	Recv() (*CredentialsRequest, error)
+	Recv() (*ServiceAccountRequest, error)
 	grpc.ServerStream
 }
 
@@ -233,8 +201,8 @@ func (x *serviceAccountServiceDeleteServer) Send(m *ServiceAccount) error {
 	return x.ServerStream.SendMsg(m)
 }
 
-func (x *serviceAccountServiceDeleteServer) Recv() (*CredentialsRequest, error) {
-	m := new(CredentialsRequest)
+func (x *serviceAccountServiceDeleteServer) Recv() (*ServiceAccountRequest, error) {
+	m := new(ServiceAccountRequest)
 	if err := x.ServerStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
@@ -251,10 +219,6 @@ var ServiceAccountService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Create",
 			Handler:    _ServiceAccountService_Create_Handler,
-		},
-		{
-			MethodName: "GenerateCredentials",
-			Handler:    _ServiceAccountService_GenerateCredentials_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{

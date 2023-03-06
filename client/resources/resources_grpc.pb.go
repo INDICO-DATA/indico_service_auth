@@ -4,7 +4,7 @@
 // - protoc             v3.12.4
 // source: resources.proto
 
-package resource
+package resources
 
 import (
 	context "context"

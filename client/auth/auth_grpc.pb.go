@@ -24,7 +24,7 @@ const _ = grpc.SupportPackageIsVersion7
 type AuthServiceClient interface {
 	GenerateToken(ctx context.Context, in *GenerateTokenRequest, opts ...grpc.CallOption) (*GenerateTokenResponse, error)
 	Refresh(ctx context.Context, in *RefreshRequest, opts ...grpc.CallOption) (*GenerateTokenResponse, error)
-	Authenticate(ctx context.Context, in *AuthRequest, opts ...grpc.CallOption) (*AuthResponse, error)
+	Authenticate(ctx context.Context, in *AuthToken, opts ...grpc.CallOption) (*AuthToken, error)
 }
 
 type authServiceClient struct {
@@ -53,8 +53,8 @@ func (c *authServiceClient) Refresh(ctx context.Context, in *RefreshRequest, opt
 	return out, nil
 }
 
-func (c *authServiceClient) Authenticate(ctx context.Context, in *AuthRequest, opts ...grpc.CallOption) (*AuthResponse, error) {
-	out := new(AuthResponse)
+func (c *authServiceClient) Authenticate(ctx context.Context, in *AuthToken, opts ...grpc.CallOption) (*AuthToken, error) {
+	out := new(AuthToken)
 	err := c.cc.Invoke(ctx, "/AuthService/Authenticate", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -68,7 +68,7 @@ func (c *authServiceClient) Authenticate(ctx context.Context, in *AuthRequest, o
 type AuthServiceServer interface {
 	GenerateToken(context.Context, *GenerateTokenRequest) (*GenerateTokenResponse, error)
 	Refresh(context.Context, *RefreshRequest) (*GenerateTokenResponse, error)
-	Authenticate(context.Context, *AuthRequest) (*AuthResponse, error)
+	Authenticate(context.Context, *AuthToken) (*AuthToken, error)
 	mustEmbedUnimplementedAuthServiceServer()
 }
 
@@ -82,7 +82,7 @@ func (UnimplementedAuthServiceServer) GenerateToken(context.Context, *GenerateTo
 func (UnimplementedAuthServiceServer) Refresh(context.Context, *RefreshRequest) (*GenerateTokenResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Refresh not implemented")
 }
-func (UnimplementedAuthServiceServer) Authenticate(context.Context, *AuthRequest) (*AuthResponse, error) {
+func (UnimplementedAuthServiceServer) Authenticate(context.Context, *AuthToken) (*AuthToken, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Authenticate not implemented")
 }
 func (UnimplementedAuthServiceServer) mustEmbedUnimplementedAuthServiceServer() {}
@@ -135,7 +135,7 @@ func _AuthService_Refresh_Handler(srv interface{}, ctx context.Context, dec func
 }
 
 func _AuthService_Authenticate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(AuthRequest)
+	in := new(AuthToken)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -147,7 +147,7 @@ func _AuthService_Authenticate_Handler(srv interface{}, ctx context.Context, dec
 		FullMethod: "/AuthService/Authenticate",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthServiceServer).Authenticate(ctx, req.(*AuthRequest))
+		return srv.(AuthServiceServer).Authenticate(ctx, req.(*AuthToken))
 	}
 	return interceptor(ctx, in, info, handler)
 }

@@ -10,20 +10,9 @@ import (
 	clientsClient "github.com/INDICO-INNOVATION/indico_service_auth/client/clients"
 	resourcesClient "github.com/INDICO-INNOVATION/indico_service_auth/client/resources"
 	serviceAccountClient "github.com/INDICO-INNOVATION/indico_service_auth/client/service_account"
+	serviceAccountKeyClient "github.com/INDICO-INNOVATION/indico_service_auth/client/service_account_keys"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
-
-type ResourceScope struct {
-	ResourceScopesID int64  `json:"resource_scopes_id"`
-	Name             string `json:"name"`
-	Label            string `json:"label"`
-	Description      string `json:"description,omitempty"`
-	ResourceID       int64  `json:"resource_id"`
-}
-
-type ResourceScopeList struct {
-	Data []*ResourceScope `json:"data"`
-}
 
 // Service Accounts
 func (client *Client) CreateServiceAccount(ctx context.Context, displayName string, name string, description string) (*serviceAccountClient.ServiceAccount, error) {
@@ -68,12 +57,12 @@ func (client *Client) ListServiceAccounts(ctx context.Context) ([]*serviceAccoun
 	return serviceAccounts, nil
 }
 
-func (client *Client) GenerateCredentials(ctx context.Context, id string) (*serviceAccountClient.ServiceAccountCredentials, error) {
+func (client *Client) GenerateCredentials(ctx context.Context, id int64) (*serviceAccountKeyClient.ServiceAccountKey, error) {
 	if err := authorize(ctx, client, "iam_backoffice.admin"); err != nil {
 		return nil, fmt.Errorf("%w", err)
 	}
 
-	return client.serviceAccountService.GenerateCredentials(ctx, &serviceAccountClient.CredentialsRequest{ServiceAccountId: id})
+	return client.serviceAccountKeysService.Create(ctx, &serviceAccountKeyClient.CredentialsRequest{ServiceAccountId: id})
 }
 
 func (client *Client) DeleteServiceAccount(ctx context.Context, ids []string) ([]*serviceAccountClient.ServiceAccount, error) {
@@ -106,7 +95,7 @@ func (client *Client) DeleteServiceAccount(ctx context.Context, ids []string) ([
 	}()
 
 	for _, accountID := range ids {
-		if err := stream.Send(&serviceAccountClient.CredentialsRequest{ServiceAccountId: accountID}); err != nil {
+		if err := stream.Send(&serviceAccountClient.ServiceAccountRequest{ServiceAccountId: accountID}); err != nil {
 			return nil, fmt.Errorf("the following error occured while streaming delete service accounts: %w", err)
 		}
 	}
