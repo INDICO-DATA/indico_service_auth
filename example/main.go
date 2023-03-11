@@ -1,6 +1,8 @@
 package main
 
 import (
+	"context"
+	"fmt"
 	"log"
 	"os"
 
@@ -8,9 +10,9 @@ import (
 )
 
 func main() {
-	testAPIClients()
+	//testAPIClients()
 
-	// testBackoffice()
+	testBackoffice()
 
 	// generateAndValidate(client, ctx)
 	// validateThird(client, ctx, "643863")
@@ -105,18 +107,19 @@ func testGaiaAPIClient() {
 
 }
 
-// func testBackoffice() {
-// 	os.Setenv("INNOVATION_CREDENTIALS", "backoffice.json")
+func testBackoffice() {
+	os.Setenv("INNOVATION_CREDENTIALS", "backoffice.json")
 
-// 	client, ctx, err := indicoserviceauth.NewClient()
-// 	if err != nil {
-// 		log.Fatalf(err.Error())
-// 	}
+	client, ctx, err := indicoserviceauth.NewClient()
+	if err != nil {
+		log.Fatalf(err.Error())
+	}
 
-// 	testServiceAccounts(client, ctx)
-// 	testClients(client, ctx)
-// 	testResources(client, ctx)
-// }
+	// testServiceAccounts(client, ctx)
+	testServiceAccountKeys(client, ctx)
+	// testClients(client, ctx)
+	// testResources(client, ctx)
+}
 
 // func testServiceAccounts(client *indicoserviceauth.Client, ctx context.Context) {
 // 	var serviceAccounts []*serviceaccounts.ServiceAccount
@@ -153,15 +156,54 @@ func testGaiaAPIClient() {
 // 	fmt.Printf("%+v \n", serviceAccounts)
 // 	fmt.Println("")
 
-// 	credentials, err := client.GenerateCredentials(ctx, serviceAccounts[0].ServiceAccountId)
-// 	if err != nil {
-// 		log.Fatalf(err.Error())
-// 	}
-
-// 	fmt.Println("Credentials Generated:")
-// 	fmt.Printf("%+v \n", credentials)
-// 	fmt.Println("")
 // }
+
+func testServiceAccountKeys(client *indicoserviceauth.Client, ctx context.Context) {
+	serviceAccounts, err := client.ListServiceAccounts(ctx)
+	if err != nil {
+		log.Fatalf(err.Error())
+	}
+
+	if len(serviceAccounts) == 0 {
+		log.Fatal("no service accounts found to test service account keys")
+	}
+
+	key, err := client.CreateServiceAccountKey(ctx, serviceAccounts[0].ServiceAccountId)
+	if err != nil {
+		log.Fatalf(err.Error())
+	}
+
+	fmt.Println("Service Account Key Generated:")
+	fmt.Printf("%+v \n", key)
+	fmt.Println("")
+
+	keys, err := client.ListServiceAccountKeys(ctx, serviceAccounts[0].ServiceAccountId)
+	if err != nil {
+		log.Fatalf(err.Error())
+	}
+
+	fmt.Println("Service Account Key Listed:")
+	fmt.Printf("%+v \n", keys)
+	fmt.Println("")
+
+	key, err = client.RetrieveServiceAccountKey(ctx, key.KeyId)
+	if err != nil {
+		log.Fatalf(err.Error())
+	}
+
+	fmt.Println("Service Account Key Retrieved:")
+	fmt.Printf("%+v \n", key)
+	fmt.Println("")
+
+	keys, err = client.DeleteServiceAccountKey(ctx, []string{key.KeyId})
+	if err != nil {
+		log.Fatalf(err.Error())
+	}
+
+	fmt.Println("Service Account Key Deleted:")
+	fmt.Printf("%+v \n", keys)
+	fmt.Println("")
+}
 
 // func testClients(client *indicoserviceauth.Client, ctx context.Context) {
 // 	var clients []*clients.Client

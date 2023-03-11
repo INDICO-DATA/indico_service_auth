@@ -57,14 +57,6 @@ func (client *Client) ListServiceAccounts(ctx context.Context) ([]*serviceAccoun
 	return serviceAccounts, nil
 }
 
-func (client *Client) GenerateCredentials(ctx context.Context, id int64) (*serviceAccountKeyClient.ServiceAccountKey, error) {
-	if err := authorize(ctx, client, "iam_backoffice.admin"); err != nil {
-		return nil, fmt.Errorf("%w", err)
-	}
-
-	return client.serviceAccountKeysService.Create(ctx, &serviceAccountKeyClient.CredentialsRequest{ServiceAccountId: id})
-}
-
 func (client *Client) DeleteServiceAccount(ctx context.Context, ids []string) ([]*serviceAccountClient.ServiceAccount, error) {
 	if err := authorize(ctx, client, "iam_backoffice.admin"); err != nil {
 		return nil, fmt.Errorf("%w", err)
@@ -103,6 +95,91 @@ func (client *Client) DeleteServiceAccount(ctx context.Context, ids []string) ([
 	<-waitc
 
 	return deletedServicesAccounts, nil
+}
+
+// Service Account Keys
+func (client *Client) CreateServiceAccountKey(ctx context.Context, serviceAccountID int64) (*serviceAccountKeyClient.ServiceAccountKey, error) {
+	if err := authorize(ctx, client, "iam_backoffice.admin"); err != nil {
+		return nil, fmt.Errorf("%w", err)
+	}
+
+	return client.serviceAccountKeysService.Create(ctx, &serviceAccountKeyClient.CredentialsRequest{ServiceAccountId: serviceAccountID})
+}
+
+func (client *Client) ListServiceAccountKeys(ctx context.Context, serviceAccountID int64) ([]*serviceAccountKeyClient.ServiceAccountKey, error) {
+	if err := authorize(ctx, client, "iam_server.use"); err != nil {
+		return nil, fmt.Errorf("%w", err)
+	}
+
+	keys := []*serviceAccountKeyClient.ServiceAccountKey{}
+
+	stream, err := client.serviceAccountKeysService.List(ctx, &serviceAccountKeyClient.CredentialsRequest{ServiceAccountId: serviceAccountID})
+	if err != nil {
+		return nil, fmt.Errorf("error to stream list service account keys due to: %w", err)
+	}
+
+	for {
+		serviceAccount, err := stream.Recv()
+		if err == io.EOF {
+			break
+		}
+
+		if err != nil {
+			return nil, fmt.Errorf("the following error occured while streaming list service account keys: %w", err)
+		}
+
+		keys = append(keys, serviceAccount)
+	}
+
+	return keys, nil
+}
+
+func (client *Client) DeleteServiceAccountKey(ctx context.Context, keyIDs []string) ([]*serviceAccountKeyClient.ServiceAccountKey, error) {
+	if err := authorize(ctx, client, "iam_backoffice.admin"); err != nil {
+		return nil, fmt.Errorf("%w", err)
+	}
+
+	stream, err := client.serviceAccountKeysService.Delete(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("the following error occured while streaming delete service account keys: %w", err)
+	}
+
+	deletedServicesAccounts := []*serviceAccountKeyClient.ServiceAccountKey{}
+
+	waitc := make(chan struct{})
+	go func() {
+		for {
+			in, err := stream.Recv()
+			if err == io.EOF {
+				close(waitc)
+				return
+			}
+
+			if err != nil {
+				log.Fatalf("the following error occured while streaming delete service account keys response: %s", err.Error())
+			}
+
+			deletedServicesAccounts = append(deletedServicesAccounts, in)
+		}
+	}()
+
+	for _, key := range keyIDs {
+		if err := stream.Send(&serviceAccountKeyClient.ServiceAccountKeyRequest{KeyId: key}); err != nil {
+			return nil, fmt.Errorf("the following error occured while streaming delete service account keys: %w", err)
+		}
+	}
+	stream.CloseSend()
+	<-waitc
+
+	return deletedServicesAccounts, nil
+}
+
+func (client *Client) RetrieveServiceAccountKey(ctx context.Context, keyID string) (*serviceAccountKeyClient.ServiceAccountKey, error) {
+	if err := authorize(ctx, client, "iam_server.use"); err != nil {
+		return nil, fmt.Errorf("%w", err)
+	}
+
+	return client.serviceAccountKeysService.Retrieve(ctx, &serviceAccountKeyClient.ServiceAccountKeyRequest{KeyId: keyID})
 }
 
 // Resources

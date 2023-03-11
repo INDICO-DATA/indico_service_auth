@@ -113,12 +113,13 @@ func NewClient() (*Client, context.Context, error) {
 	ctx, _ := helpers.InitContext()
 	conn := iam.Connect()
 	client := &Client{
-		authService:           authClient.NewAuthServiceClient(conn),
-		mfaService:            mfaClient.NewMFAServiceClient(conn),
-		serviceAccountService: serviceAccountClient.NewServiceAccountServiceClient(conn),
-		resourcesService:      resourcesClient.NewResourceServiceClient(conn),
-		clientsService:        clientsClient.NewClientServiceClient(conn),
-		integrationService:    integrationClient.NewIntegrationsServiceClient(conn),
+		authService:               authClient.NewAuthServiceClient(conn),
+		mfaService:                mfaClient.NewMFAServiceClient(conn),
+		serviceAccountService:     serviceAccountClient.NewServiceAccountServiceClient(conn),
+		resourcesService:          resourcesClient.NewResourceServiceClient(conn),
+		clientsService:            clientsClient.NewClientServiceClient(conn),
+		integrationService:        integrationClient.NewIntegrationsServiceClient(conn),
+		serviceAccountKeysService: serviceAccountKeysClient.NewServiceAccountKeysServiceClient(conn),
 	}
 
 	err := authorize(ctx, client, "auth.connect")
