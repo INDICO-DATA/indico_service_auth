@@ -8,20 +8,20 @@ import (
 	"strings"
 	"time"
 
-	authClient "github.com/INDICO-INNOVATION/indico_service_auth/client/auth"
-	clientsClient "github.com/INDICO-INNOVATION/indico_service_auth/client/clients"
-	integrationClient "github.com/INDICO-INNOVATION/indico_service_auth/client/integrations"
-	mfaClient "github.com/INDICO-INNOVATION/indico_service_auth/client/mfa"
-	resourcesClient "github.com/INDICO-INNOVATION/indico_service_auth/client/resources"
-	serviceAccountClient "github.com/INDICO-INNOVATION/indico_service_auth/client/service_account"
-	serviceAccountKeysClient "github.com/INDICO-INNOVATION/indico_service_auth/client/service_account_keys"
+	authClient "github.com/INDICO-INNOVATION/indico_service_auth/v2/client/auth"
+	clientsClient "github.com/INDICO-INNOVATION/indico_service_auth/v2/client/clients"
+	integrationClient "github.com/INDICO-INNOVATION/indico_service_auth/v2/client/integrations"
+	mfaClient "github.com/INDICO-INNOVATION/indico_service_auth/v2/client/mfa"
+	resourcesClient "github.com/INDICO-INNOVATION/indico_service_auth/v2/client/resources"
+	serviceAccountClient "github.com/INDICO-INNOVATION/indico_service_auth/v2/client/service_account"
+	serviceAccountKeysClient "github.com/INDICO-INNOVATION/indico_service_auth/v2/client/service_account_keys"
 
 	"github.com/go-jose/go-jose"
 	"github.com/google/uuid"
 
-	"github.com/INDICO-INNOVATION/indico_service_auth/pkg/constants"
-	"github.com/INDICO-INNOVATION/indico_service_auth/pkg/helpers"
-	"github.com/INDICO-INNOVATION/indico_service_auth/pkg/iam"
+	"github.com/INDICO-INNOVATION/indico_service_auth/v2/pkg/constants"
+	"github.com/INDICO-INNOVATION/indico_service_auth/v2/pkg/helpers"
+	"github.com/INDICO-INNOVATION/indico_service_auth/v2/pkg/iam"
 )
 
 type Client struct {

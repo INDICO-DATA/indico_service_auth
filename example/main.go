@@ -6,7 +6,7 @@ import (
 	"log"
 	"os"
 
-	indicoserviceauth "github.com/INDICO-INNOVATION/indico_service_auth"
+	indicoserviceauth "github.com/INDICO-INNOVATION/indico_service_auth/v2"
 )
 
 func main() {

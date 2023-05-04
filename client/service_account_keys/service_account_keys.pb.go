@@ -7,7 +7,7 @@
 package service_account_keys
 
 import (
-	service_account "github.com/INDICO-INNOVATION/indico_service_auth/client/service_account"
+	service_account "github.com/INDICO-INNOVATION/indico_service_auth/v2/client/service_account"
 	timestamp "github.com/golang/protobuf/ptypes/timestamp"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
