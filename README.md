@@ -23,13 +23,13 @@ So we have built this MFA Client to be imported by any Golang application instea
 ## Install
 Go version 1.14+
 ```
-go get git@github.com:INDICO-INNOVATION/indico_service_auth.git/v2
+go get github.com/INDICO-INNOVATION/indico_service_auth
 ```
 
 
-```bash
+```go
 # Example
-import indicoserviceauth "git@github.com:INDICO-INNOVATION/indico_service_auth.git/v2"
+import indicoserviceauth "github.com/INDICO-INNOVATION/indico_service_auth"
 
 client, ctx, err := indicoserviceauth.NewClient()
 if err != nil {
