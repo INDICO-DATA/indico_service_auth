@@ -2,8 +2,6 @@ module github.com/INDICO-INNOVATION/indico_service_auth
 
 go 1.20
 
-retract [v2.0.0, v2.2.0]
-
 require (
 	github.com/go-jose/go-jose v2.6.1+incompatible
 	github.com/golang/protobuf v1.5.3
