@@ -6,11 +6,11 @@ import (
 	"io"
 	"log"
 
-	"github.com/INDICO-INNOVATION/indico_service_auth/v2/client/clients"
-	clientsClient "github.com/INDICO-INNOVATION/indico_service_auth/v2/client/clients"
-	resourcesClient "github.com/INDICO-INNOVATION/indico_service_auth/v2/client/resources"
-	serviceAccountClient "github.com/INDICO-INNOVATION/indico_service_auth/v2/client/service_account"
-	serviceAccountKeyClient "github.com/INDICO-INNOVATION/indico_service_auth/v2/client/service_account_keys"
+	"github.com/INDICO-INNOVATION/indico_service_auth/client/clients"
+	clientsClient "github.com/INDICO-INNOVATION/indico_service_auth/client/clients"
+	resourcesClient "github.com/INDICO-INNOVATION/indico_service_auth/client/resources"
+	serviceAccountClient "github.com/INDICO-INNOVATION/indico_service_auth/client/service_account"
+	serviceAccountKeyClient "github.com/INDICO-INNOVATION/indico_service_auth/client/service_account_keys"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 

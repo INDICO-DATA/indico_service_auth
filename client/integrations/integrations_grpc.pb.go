@@ -8,7 +8,7 @@ package integrations
 
 import (
 	context "context"
-	auth "github.com/INDICO-INNOVATION/indico_service_auth/v2/client/auth"
+	auth "github.com/INDICO-INNOVATION/indico_service_auth/client/auth"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"

@@ -6,7 +6,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/INDICO-INNOVATION/indico_service_auth/v2/pkg/helpers"
+	"github.com/INDICO-INNOVATION/indico_service_auth/pkg/helpers"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 )
