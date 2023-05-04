@@ -6,6 +6,8 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+
+	"github.com/INDICO-INNOVATION/indico_service_auth/pkg/constants"
 )
 
 type InnovationCredentials struct {
@@ -33,14 +35,12 @@ func ParseEnvironment() (*InnovationCredentials, string) {
 		log.Println("environment variable INNOVATION_CREDENTIALS not set")
 	}
 
-	const AUTH_SERVER = "iam.services.indicoinnovation.pt"
-
-	var authServer string = AUTH_SERVER
+	authServer := constants.AUTH_SERVER
 	if os.Getenv("AUTH_SERVER") != "" {
 		authServer = os.Getenv("AUTH_SERVER")
 	}
 
-	if os.Getenv("ENVIRONMENT") != "local" {
+	if os.Getenv("INSECURE") != "true" {
 		authServer = fmt.Sprintf("%s:443", authServer)
 	}
 
