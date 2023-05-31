@@ -7,10 +7,11 @@ import (
 
 	authClient "github.com/INDICO-INNOVATION/indico_service_auth/client/auth"
 	integrationClient "github.com/INDICO-INNOVATION/indico_service_auth/client/integrations"
+	"github.com/INDICO-INNOVATION/indico_service_auth/pkg/constants"
 )
 
 func (client *Client) GenerateJWT(ctx context.Context, headers map[string]interface{}, claims map[string]interface{}, private string) (*authClient.AuthToken, error) {
-	if err := authorize(ctx, client, "integrations.jwt"); err != nil {
+	if err := authorize(ctx, client, constants.TokenGenerate); err != nil {
 		return nil, fmt.Errorf("%w", err)
 	}
 
@@ -32,7 +33,7 @@ func (client *Client) GenerateJWT(ctx context.Context, headers map[string]interf
 }
 
 func (client *Client) ValidateJWT(ctx context.Context, token string, privateKey string) (*authClient.AuthToken, error) {
-	if err := authorize(ctx, client, "integrations.jwt"); err != nil {
+	if err := authorize(ctx, client, constants.TokenValidate); err != nil {
 		return nil, fmt.Errorf("%w", err)
 	}
 
