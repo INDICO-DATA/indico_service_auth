@@ -35,7 +35,7 @@ func ParseEnvironment() (*InnovationCredentials, string) {
 		log.Println("environment variable INNOVATION_CREDENTIALS not set")
 	}
 
-	authServer := constants.AUTH_SERVER
+	authServer := constants.AuthServer
 	if os.Getenv("AUTH_SERVER") != "" {
 		authServer = os.Getenv("AUTH_SERVER")
 	}

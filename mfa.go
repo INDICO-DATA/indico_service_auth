@@ -1,43 +1,37 @@
 package indicoserviceauth
 
-// func (client *Client) GenerateOTP(ctx context.Context) (*mfaClient.GenerateOTPTokenResponse, error) {
-// 	if err := authorize(ctx, client, "mfa.validate"); err != nil {
-// 		return nil, fmt.Errorf("%w", err)
-// 	}
+import (
+	"context"
+	"fmt"
 
-// 	otpRequest := &mfaClient.GenerateOTPTokenRequest{
-// 		ClientId:     iam.Credentials.ClientID,
-// 		ClientSecret: iam.Credentials.ClientSecret,
-// 	}
+	mfaClient "github.com/INDICO-INNOVATION/indico_service_auth/client/mfa"
+	"github.com/INDICO-INNOVATION/indico_service_auth/pkg/constants"
+	"github.com/INDICO-INNOVATION/indico_service_auth/pkg/iam"
+)
 
-// 	return client.mfaService.GenerateOTPToken(ctx, otpRequest)
-// }
+func (client *Client) GenerateOTP(ctx context.Context, clientSecret string) (*mfaClient.GenerateOTPTokenResponse, error) {
+	if err := authorize(ctx, client, constants.MFAGenerate); err != nil {
+		return nil, fmt.Errorf("%w", err)
+	}
 
-// func (client *Client) ValidateOTP(ctx context.Context, otp string, useSecret bool) (*mfaClient.ValidateOTPTokenResponse, error) {
-// 	if err := authorize(ctx, client, "mfa.validate"); err != nil {
-// 		return nil, fmt.Errorf("%w", err)
-// 	}
+	otpRequest := &mfaClient.GenerateOTPTokenRequest{
+		Principal:    iam.Credentials.Principal,
+		ClientSecret: clientSecret,
+	}
 
-// 	validateRequest := &mfaClient.ValidateOTPTokenRequest{
-// 		Token:    otp,
-// 		ClientId: iam.Credentials.ClientID,
-// 	}
+	return client.mfaService.GenerateOTPToken(ctx, otpRequest)
+}
 
-// 	if useSecret {
-// 		validateRequest.ClientSecret = iam.Credentials.ClientSecret
-// 	}
+func (client *Client) ValidateOTP(ctx context.Context, otp string, clientSecret string) (*mfaClient.ValidateOTPTokenResponse, error) {
+	if err := authorize(ctx, client, constants.MFAValidate); err != nil {
+		return nil, fmt.Errorf("%w", err)
+	}
 
-// 	return client.mfaService.ValidateOTPToken(ctx, validateRequest)
-// }
+	validateRequest := &mfaClient.ValidateOTPTokenRequest{
+		Token:        otp,
+		Principal:    iam.Credentials.Principal,
+		ClientSecret: clientSecret,
+	}
 
-// func (client *Client) GenerateSecretKey(ctx context.Context) (*mfaClient.OTPSecretResponse, error) {
-// 	if err := authorize(ctx, client, "mfa.validate"); err != nil {
-// 		return nil, fmt.Errorf("%w", err)
-// 	}
-
-// 	secretRequest := &mfaClient.GenerateOTPTokenRequest{
-// 		ClientId: iam.Credentials.ClientSecret,
-// 	}
-
-// 	return client.mfaService.GenerateSecretKey(ctx, secretRequest)
-// }
+	return client.mfaService.ValidateOTPToken(ctx, validateRequest)
+}
