@@ -8,16 +8,16 @@ import (
 	"strings"
 	"time"
 
-	authClient "github.com/INDICO-INNOVATION/indico_service_auth/client/auth"
-	integrationClient "github.com/INDICO-INNOVATION/indico_service_auth/client/integrations"
-	mfaClient "github.com/INDICO-INNOVATION/indico_service_auth/client/mfa"
+	authClient "github.com/indicoinnovation/indico_service_auth/client/auth"
+	integrationClient "github.com/indicoinnovation/indico_service_auth/client/integrations"
+	mfaClient "github.com/indicoinnovation/indico_service_auth/client/mfa"
 
 	"github.com/go-jose/go-jose"
 	"github.com/google/uuid"
 
-	"github.com/INDICO-INNOVATION/indico_service_auth/pkg/constants"
-	"github.com/INDICO-INNOVATION/indico_service_auth/pkg/helpers"
-	"github.com/INDICO-INNOVATION/indico_service_auth/pkg/iam"
+	"github.com/indicoinnovation/indico_service_auth/pkg/constants"
+	"github.com/indicoinnovation/indico_service_auth/pkg/helpers"
+	"github.com/indicoinnovation/indico_service_auth/pkg/iam"
 )
 
 type Client struct {

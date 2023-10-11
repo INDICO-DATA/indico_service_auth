@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	mfaClient "github.com/INDICO-INNOVATION/indico_service_auth/client/mfa"
-	"github.com/INDICO-INNOVATION/indico_service_auth/pkg/constants"
-	"github.com/INDICO-INNOVATION/indico_service_auth/pkg/iam"
+	mfaClient "github.com/indicoinnovation/indico_service_auth/client/mfa"
+	"github.com/indicoinnovation/indico_service_auth/pkg/constants"
+	"github.com/indicoinnovation/indico_service_auth/pkg/iam"
 )
 
 func (client *Client) GenerateOTP(ctx context.Context, clientSecret string) (*mfaClient.GenerateOTPTokenResponse, error) {

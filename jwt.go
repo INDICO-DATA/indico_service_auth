@@ -5,9 +5,9 @@ import (
 	"encoding/json"
 	"fmt"
 
-	authClient "github.com/INDICO-INNOVATION/indico_service_auth/client/auth"
-	integrationClient "github.com/INDICO-INNOVATION/indico_service_auth/client/integrations"
-	"github.com/INDICO-INNOVATION/indico_service_auth/pkg/constants"
+	authClient "github.com/indicoinnovation/indico_service_auth/client/auth"
+	integrationClient "github.com/indicoinnovation/indico_service_auth/client/integrations"
+	"github.com/indicoinnovation/indico_service_auth/pkg/constants"
 )
 
 func (client *Client) GenerateJWT(ctx context.Context, headers map[string]interface{}, claims map[string]interface{}, private string) (*authClient.AuthToken, error) {
