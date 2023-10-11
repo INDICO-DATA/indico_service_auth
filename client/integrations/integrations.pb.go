@@ -7,7 +7,7 @@
 package integrations
 
 import (
-	auth "github.com/INDICO-INNOVATION/indico_service_auth/client/auth"
+	auth "github.com/indicoinnovation/indico_service_auth/client/auth"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"

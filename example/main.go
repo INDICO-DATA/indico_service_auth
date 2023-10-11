@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 
-	indicoserviceauth "github.com/INDICO-INNOVATION/indico_service_auth"
+	indicoserviceauth "github.com/indicoinnovation/indico_service_auth"
 )
 
 func main() {

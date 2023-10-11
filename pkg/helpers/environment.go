@@ -7,7 +7,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/INDICO-INNOVATION/indico_service_auth/pkg/constants"
+	"github.com/indicoinnovation/indico_service_auth/pkg/constants"
 )
 
 type InnovationCredentials struct {
